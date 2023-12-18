@@ -34,7 +34,7 @@ public class Main_Panel extends JPanel
         add(panel[1],BorderLayout.EAST);
         
         panel[0].setPreferredSize(new Dimension(200,100));
-        panel[1].setPreferredSize(new Dimension(600,100));
+        panel[1].setPreferredSize(new Dimension(590,100));
         
         panel[0].setLayout(new BorderLayout(0, 0));
         panel[1].setLayout(new BorderLayout(0, 0));
@@ -95,30 +95,58 @@ public class Main_Panel extends JPanel
         
         //Right
         panel[3].setBackground(Color.DARK_GRAY);
-        panel[3].setLayout(null);
+        panel[3].setLayout(new BorderLayout(0, 0));
         
         //Form 1.1 panel [2] panel [3]
         
         //Left
+        panel[4].setBackground(Color.LIGHT_GRAY);
         panel[4].setLayout(null);
         
+        //Back
+        panel[4].add(button[2] = new JButton("Back"));
         //Add
+        panel[4].add(button[3] = new JButton("Add Product"));
         //Update
+        panel[4].add(button[4] = new JButton("Update Product"));
         //Delete
-        //Records
+        panel[4].add(button[5] = new JButton("Delete Product"));
+        //Records (Products, Customer, Sales)
+        panel[4].add(button[6] = new JButton("Records"));
+        
+        button[2].setBounds(25,100,130,50);
+        button[3].setBounds(25,150,130,50);
+        button[4].setBounds(25,200,130,50);
+        button[5].setBounds(25,250,130,50);
+        button[6].setBounds(25,300,130,50);
+        
+        button[2].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel[0].removeAll();
+                panel[0].add(panel[2]);
+                panel[0].revalidate();
+                panel[0].repaint();
+                panel[1].removeAll();
+                panel[1].add(panel[3]);
+                panel[1].revalidate();
+                panel[1].repaint();
+            }
+        });
         
         //Right
-        panel[5].setLayout(null);
+        panel[5].setLayout(new BorderLayout(0, 0));
         
         
         
         //Form 1.2 panel[4] panel [5]
         
         //Left
-        panel[6].setLayout(null);
+        panel[6].setLayout(new BorderLayout(0, 0));
         
         //Right
-        panel[7].setLayout(null);
+        panel[7].setLayout(new BorderLayout(0, 0));
         
     }
 }
