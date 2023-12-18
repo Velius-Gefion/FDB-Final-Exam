@@ -1,4 +1,4 @@
-Para sa Final Exam sa Fundamentals of Database
+Para sa Final Exam ni Cataraja sa Fundamentals of Database
 
 Might update this more if malingaw ko more
 
