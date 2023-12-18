@@ -103,6 +103,10 @@ public class Main_Panel extends JPanel
         panel[4].setBackground(Color.LIGHT_GRAY);
         panel[4].setLayout(null);
         
+        panel[4].add(label[0] = new JLabel("Grocery Menu"));
+        label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        label[0].setBounds(15,10,200,30);
+        
         //Back
         panel[4].add(button[2] = new JButton("Back"));
         //Add
@@ -114,13 +118,51 @@ public class Main_Panel extends JPanel
         //Records (Products, Customer, Sales)
         panel[4].add(button[6] = new JButton("Records"));
         
-        button[2].setBounds(25,100,130,50);
-        button[3].setBounds(25,150,130,50);
-        button[4].setBounds(25,200,130,50);
-        button[5].setBounds(25,250,130,50);
-        button[6].setBounds(25,300,130,50);
+        button[2].setBounds(45,50,110,30);
+        button[3].setBounds(100,100,70,70);
+        button[4].setBounds(100,190,70,70);
+        button[5].setBounds(100,280,70,70);
+        button[6].setBounds(100,370,70,70);
         
         button[2].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel[0].removeAll();
+                panel[0].add(panel[2]);
+                panel[0].revalidate();
+                panel[0].repaint();
+                panel[1].removeAll();
+                panel[1].add(panel[3]);
+                panel[1].revalidate();
+                panel[1].repaint();
+            }
+        });
+        button[3].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Add Product");
+                //create();
+            }
+        });
+        button[4].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Update Product");
+                //update();
+            }
+        });
+        button[5].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Delete Product");
+                //delete();
+            }
+        });
+        button[6].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {

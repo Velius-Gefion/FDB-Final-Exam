@@ -44,10 +44,7 @@ public class Functions
     }
     
     public void validate(String username, String password)
-    {
-        this.username = username;
-        this.password = password;
-        
+    {   
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE USERNAME = ? AND PASSWORD = ?");
             stmt.setString(1, username);
@@ -62,11 +59,11 @@ public class Functions
             Logger.getLogger(Login_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    /*
-    public void create()
+    
+    public void create(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (product_id, product_description, product_available_quantity, product_unit, product_price) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_ID, PRODUCT_DESCRIPTION, PRODUCT_AVAIABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?, ?)");
             stmt.setInt(1, productId);
             stmt.setString(2, productDescription);
             stmt.setInt(3, productAvailableQuantity);
@@ -78,10 +75,10 @@ public class Functions
         }
     }
     
-    public void update()
+    public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE products SET product_description = ?, product_available_quantity = ?, product_unit = ?, product_price = ? WHERE product_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE products SET PRODUCT_DESCRIPTION = ?, PRODUCT_AVAIABLE_QUANTITY = ?, PRODUCT_UNIT = ?, PRODUCT_PRICE = ? WHERE PRODUCT_ID = ?");
             stmt.setString(1, productDescription);
             stmt.setInt(2, productAvailableQuantity);
             stmt.setString(3, productUnit);
@@ -93,24 +90,24 @@ public class Functions
         }
     }
     
-    public void delete()
+    public void delete(int productId)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM products WHERE product_id = ?");
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM products WHERE PRODUCT_ID = ?");
             stmt.setInt(1, productId);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /*
     public void purchase()
     {
         // Purchase transaction
         customerName = JOptionPane.showInputDialog(null, "Enter customer name:");
         customerEmail = JOptionPane.showInputDialog(null, "Enter customer email:");
         // Show list of products and ask for quantity
-        // Subtract quantity from product_available_quantity in the database
+        // Subtract quantity from PRODUCT_AVAIABLE_QUANTITY in the database
         totalAmount = 0.0;
         // Compute change and display total amount and change
     }
@@ -125,11 +122,11 @@ public class Functions
             int rowNum = 0;
             while (rs.next()) {
                 XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(rs.getInt("product_id"));
-                row.createCell(1).setCellValue(rs.getString("product_description"));
-                row.createCell(2).setCellValue(rs.getInt("product_available_quantity"));
-                row.createCell(3).setCellValue(rs.getString("product_unit"));
-                row.createCell(4).setCellValue(rs.getDouble("product_price"));
+                row.createCell(0).setCellValue(rs.getInt("PRODUCT_ID"));
+                row.createCell(1).setCellValue(rs.getString("PRODUCT_DESCRIPTION"));
+                row.createCell(2).setCellValue(rs.getInt("PRODUCT_AVAIABLE_QUANTITY"));
+                row.createCell(3).setCellValue(rs.getString("PRODUCT_UNIT"));
+                row.createCell(4).setCellValue(rs.getDouble("PRODUCT_PRICE"));
             }
             FileOutputStream outputStream = new FileOutputStream("products.xlsx");
             workbook.write(outputStream);
@@ -148,7 +145,7 @@ public class Functions
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM products");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                body += rs.getString("product_description") + " - " + rs.getDouble("product_price") + "\n";
+                body += rs.getString("PRODUCT_DESCRIPTION") + " - " + rs.getDouble("PRODUCT_PRICE") + "\n";
             }
             //EmailSender.sendEmail(to, subject, body);
         } catch (SQLException ex) {
