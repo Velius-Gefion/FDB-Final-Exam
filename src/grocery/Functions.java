@@ -13,19 +13,7 @@ import javax.swing.JOptionPane;
 
 public class Functions
 {
-    
-    
     Grocery grocery;
-    private String username;
-    private String password;
-    private int productId;
-    private String productDescription;
-    private int productAvailableQuantity;
-    private String productUnit;
-    private double productPrice;
-    private String customerName;
-    private String customerEmail;
-    private double totalAmount;
     private Connection conn;
     
     Functions(Grocery grocery)
@@ -111,7 +99,7 @@ public class Functions
         totalAmount = 0.0;
         // Compute change and display total amount and change
     }
-        
+    
     public void report() throws FileNotFoundException, IOException
     {
         /*try {

@@ -5,12 +5,15 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 public class Main_Panel extends JPanel
 {
     Grocery grocery;
     JPanel[] panel = new JPanel[8];
     JPanel[] sub_panel = new JPanel[3];
+    JPanel[] action_panel = new JPanel[3];
     JButton[] button = new JButton[10];
     JLabel[] label = new JLabel[10];
     JTabbedPane tabbedPane = new JTabbedPane();
@@ -33,6 +36,10 @@ public class Main_Panel extends JPanel
         sub_panel[0] = new JPanel();
         sub_panel[1] = new JPanel();
         sub_panel[2] = new JPanel();
+        
+        action_panel[0] = new JPanel();
+        action_panel[1] = new JPanel();
+        action_panel[2] = new JPanel();
         
         //Main Panel
         
@@ -190,18 +197,31 @@ public class Main_Panel extends JPanel
         
         //SubPanel for Different Records
         
-        sub_panel[0].setLayout(null);
-        sub_panel[1].setLayout(null);
-        sub_panel[2].setLayout(null);
-        tabbedPane.add("Products",sub_panel[0]);
-        tabbedPane.add("Customers",sub_panel[1]);
-        tabbedPane.add("Sales",sub_panel[2]);
+        sub_panel[0].setLayout(new BorderLayout());
+        JTable product_table = new JTable(getTableModel("Product Table"));
+        JScrollPane scrollPane1 = new JScrollPane(product_table);
+        sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
+        
+        sub_panel[1].setLayout(new BorderLayout());
+        JTable customer_table = new JTable(getTableModel("Customer Table"));
+        JScrollPane scrollPane2 = new JScrollPane(customer_table);
+        sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
+        
+        sub_panel[2].setLayout(new BorderLayout());
+        JTable sales_table = new JTable(getTableModel("Sales Table"));
+        JScrollPane scrollPane3 = new JScrollPane(sales_table);
+        sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
         
         button[6].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel[1].removeAll();
+                
+                tabbedPane.add("Products",sub_panel[0]);
+                tabbedPane.add("Customers",sub_panel[1]);
+                tabbedPane.add("Sales",sub_panel[2]);
+                
                 panel[1].add(tabbedPane);
                 panel[1].revalidate();
                 panel[1].repaint();
@@ -220,6 +240,18 @@ public class Main_Panel extends JPanel
         
         //Right
         panel[7].setLayout(new BorderLayout(0, 0));
-        
+    }
+    
+    private static TableModel getTableModel(String tableName) {
+        // Replace this with your actual data model
+        // For simplicity, using a DefaultTableModel with sample data
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Column 1");
+        model.addColumn("Column 2");
+        model.addRow(new Object[]{"Data 1", "Data 2"});
+        model.addRow(new Object[]{"Data 3", "Data 4"});
+        model.addRow(new Object[]{"Data 5", "Data 6"});
+
+        return model;
     }
 }
