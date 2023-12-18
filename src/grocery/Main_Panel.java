@@ -9,9 +9,11 @@ import javax.swing.*;
 public class Main_Panel extends JPanel
 {
     Grocery grocery;
-    JPanel[] panel = new JPanel [8];
+    JPanel[] panel = new JPanel[8];
+    JPanel[] sub_panel = new JPanel[3];
     JButton[] button = new JButton[10];
     JLabel[] label = new JLabel[10];
+    JTabbedPane tabbedPane = new JTabbedPane();
     
     Main_Panel(Grocery grocery)
     {
@@ -27,6 +29,10 @@ public class Main_Panel extends JPanel
         panel[5] = new JPanel();
         panel[6] = new JPanel();
         panel[7] = new JPanel();
+        
+        sub_panel[0] = new JPanel();
+        sub_panel[1] = new JPanel();
+        sub_panel[2] = new JPanel();
         
         //Main Panel
         
@@ -143,6 +149,12 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Add Product");
+                
+                panel[1].removeAll();
+                panel[1].add(sub_panel[0]);
+                panel[1].revalidate();
+                panel[1].repaint();
+                
                 //create();
             }
         });
@@ -151,6 +163,12 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Update Product");
+                
+                panel[1].removeAll();
+                panel[1].add(sub_panel[0]);
+                panel[1].revalidate();
+                panel[1].repaint();
+                
                 //update();
             }
         });
@@ -159,19 +177,32 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Delete Product");
+                
+                panel[1].removeAll();
+                panel[1].add(sub_panel[0]);
+                panel[1].revalidate();
+                panel[1].repaint();
+                
                 //delete();
             }
         });
+        
+        
+        //SubPanel for Different Records
+        
+        sub_panel[0].setLayout(null);
+        sub_panel[1].setLayout(null);
+        sub_panel[2].setLayout(null);
+        tabbedPane.add("Products",sub_panel[0]);
+        tabbedPane.add("Customers",sub_panel[1]);
+        tabbedPane.add("Sales",sub_panel[2]);
+        
         button[6].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel[0].removeAll();
-                panel[0].add(panel[2]);
-                panel[0].revalidate();
-                panel[0].repaint();
                 panel[1].removeAll();
-                panel[1].add(panel[3]);
+                panel[1].add(tabbedPane);
                 panel[1].revalidate();
                 panel[1].repaint();
             }
