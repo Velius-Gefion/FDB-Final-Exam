@@ -47,7 +47,7 @@ public class Main_Panel extends JPanel
         add(panel[1],BorderLayout.EAST);
         
         panel[0].setPreferredSize(new Dimension(200,100));
-        panel[1].setPreferredSize(new Dimension(590,100));
+        panel[1].setPreferredSize(new Dimension(585,100));
         
         panel[0].setLayout(new BorderLayout(0, 0));
         panel[1].setLayout(new BorderLayout(0, 0));
@@ -86,7 +86,7 @@ public class Main_Panel extends JPanel
                 panel[0].revalidate();
                 panel[0].repaint();
                 panel[1].removeAll();
-                panel[1].add(panel[5]);
+                panel[1].add(sub_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
             }
@@ -195,43 +195,74 @@ public class Main_Panel extends JPanel
         });
         
         
-        //SubPanel for Different Records
+        
+        
+        
+        //Right
+        panel[5].setLayout(new BorderLayout(0, 0));
         
         sub_panel[0].setLayout(new BorderLayout());
-        JTable product_table = new JTable(getTableModel("Product Table"));
+        JTable product_table = new JTable(new DefaultTableModel()
+        {
+            {
+                addColumn("Product ID");
+                addColumn("Description");
+                addColumn("Avaiable Quantity");
+                addColumn("Unit");
+                addColumn("Price");
+                addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4", "Data 5"});
+            }
+        });
         JScrollPane scrollPane1 = new JScrollPane(product_table);
         sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
         
         sub_panel[1].setLayout(new BorderLayout());
-        JTable customer_table = new JTable(getTableModel("Customer Table"));
+        JTable customer_table = new JTable(new DefaultTableModel()
+        {
+            {
+                addColumn("Name");
+                addColumn("Email");
+                addRow(new Object[]{"Data 1", "Data 2"});
+            }
+        });
         JScrollPane scrollPane2 = new JScrollPane(customer_table);
         sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
         
         sub_panel[2].setLayout(new BorderLayout());
-        JTable sales_table = new JTable(getTableModel("Sales Table"));
+        JTable sales_table = new JTable(new DefaultTableModel()
+        {
+            {
+                addColumn("Date");
+                addColumn("Time");
+                addColumn("Name");
+                addColumn("Email");
+                addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
+            }
+        });
         JScrollPane scrollPane3 = new JScrollPane(sales_table);
         sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
         
+
         button[6].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel[1].removeAll();
                 
-                tabbedPane.add("Products",sub_panel[0]);
+                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sub_panel[2], sub_panel[0]);
+                splitPane.setDividerLocation(200);
+                splitPane.setDividerSize(0);
+                splitPane.setEnabled(false);
+                panel[5].add(splitPane,BorderLayout.CENTER);
+                
                 tabbedPane.add("Customers",sub_panel[1]);
-                tabbedPane.add("Sales",sub_panel[2]);
+                tabbedPane.add("Sales",panel[5]);
                 
                 panel[1].add(tabbedPane);
                 panel[1].revalidate();
                 panel[1].repaint();
             }
         });
-        
-        //Right
-        panel[5].setLayout(new BorderLayout(0, 0));
-        
-        
         
         //Form 1.2 panel[4] panel [5]
         
@@ -240,18 +271,5 @@ public class Main_Panel extends JPanel
         
         //Right
         panel[7].setLayout(new BorderLayout(0, 0));
-    }
-    
-    private static TableModel getTableModel(String tableName) {
-        // Replace this with your actual data model
-        // For simplicity, using a DefaultTableModel with sample data
-        DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("Column 1");
-        model.addColumn("Column 2");
-        model.addRow(new Object[]{"Data 1", "Data 2"});
-        model.addRow(new Object[]{"Data 3", "Data 4"});
-        model.addRow(new Object[]{"Data 5", "Data 6"});
-
-        return model;
     }
 }
