@@ -6,17 +6,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 public class Main_Panel extends JPanel
 {
     Grocery grocery;
     JPanel[] panel = new JPanel[8];
     JPanel[] sub_panel = new JPanel[3];
-    JPanel[] action_panel = new JPanel[3];
+    JPanel[] action_panel = new JPanel[2];
     JButton[] button = new JButton[10];
     JLabel[] label = new JLabel[10];
     JTabbedPane tabbedPane = new JTabbedPane();
+    JSplitPane[] splitPane = new JSplitPane[2];
+    JTextField[] text = new JTextField[5];
+    JLabel[] action_label = new JLabel[5];
     
     Main_Panel(Grocery grocery)
     {
@@ -39,7 +41,12 @@ public class Main_Panel extends JPanel
         
         action_panel[0] = new JPanel();
         action_panel[1] = new JPanel();
-        action_panel[2] = new JPanel();
+        
+        text[0] = new JTextField();
+        text[1] = new JTextField();
+        text[2] = new JTextField();
+        text[3] = new JTextField();
+        text[4] = new JTextField();
         
         //Main Panel
         
@@ -86,7 +93,17 @@ public class Main_Panel extends JPanel
                 panel[0].revalidate();
                 panel[0].repaint();
                 panel[1].removeAll();
-                panel[1].add(sub_panel[0]);
+                
+                splitPane[0].setTopComponent(sub_panel[0]);
+                splitPane[0].setBottomComponent(action_panel[1]);
+                splitPane[0].getTopComponent();
+                splitPane[0].getBottomComponent();
+                splitPane[0].setDividerLocation(360);
+                splitPane[0].setDividerSize(0);
+                splitPane[0].setEnabled(false);
+                action_panel[0].add(splitPane[0]);
+                
+                panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
             }
@@ -158,7 +175,17 @@ public class Main_Panel extends JPanel
                 System.out.println("Add Product");
                 
                 panel[1].removeAll();
-                panel[1].add(sub_panel[0]);
+                
+                splitPane[0].setTopComponent(sub_panel[0]);
+                splitPane[0].setBottomComponent(action_panel[1]);
+                splitPane[0].getTopComponent();
+                splitPane[0].getBottomComponent();
+                splitPane[0].setDividerLocation(360);
+                splitPane[0].setDividerSize(0);
+                splitPane[0].setEnabled(false);
+                action_panel[0].add(splitPane[0]);
+                
+                panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
                 
@@ -172,7 +199,17 @@ public class Main_Panel extends JPanel
                 System.out.println("Update Product");
                 
                 panel[1].removeAll();
-                panel[1].add(sub_panel[0]);
+                
+                splitPane[0].setTopComponent(sub_panel[0]);
+                splitPane[0].setBottomComponent(action_panel[1]);
+                splitPane[0].getTopComponent();
+                splitPane[0].getBottomComponent();
+                splitPane[0].setDividerLocation(360);
+                splitPane[0].setDividerSize(0);
+                splitPane[0].setEnabled(false);
+                action_panel[0].add(splitPane[0]);
+                
+                panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
                 
@@ -186,7 +223,17 @@ public class Main_Panel extends JPanel
                 System.out.println("Delete Product");
                 
                 panel[1].removeAll();
-                panel[1].add(sub_panel[0]);
+                
+                splitPane[0].setTopComponent(sub_panel[0]);
+                splitPane[0].setBottomComponent(action_panel[1]);
+                splitPane[0].getTopComponent();
+                splitPane[0].getBottomComponent();
+                splitPane[0].setDividerLocation(360);
+                splitPane[0].setDividerSize(0);
+                splitPane[0].setEnabled(false);
+                action_panel[0].add(splitPane[0]);
+                
+                panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
                 
@@ -194,9 +241,33 @@ public class Main_Panel extends JPanel
             }
         });
         
+        action_panel[0].setLayout(new BorderLayout(0,0));
+        splitPane[0] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         
+        action_panel[1].setLayout(null);
+        action_panel[1].add(text[0]);
+        action_panel[1].add(text[1]);
+        action_panel[1].add(text[2]);
+        action_panel[1].add(text[3]);
+        action_panel[1].add(text[4]);
         
+        action_panel[1].add(action_label[0] = new JLabel("Product ID"));
+        action_panel[1].add(action_label[1] = new JLabel("Description"));
+        action_panel[1].add(action_label[2] = new JLabel("Available Quantity"));
+        action_panel[1].add(action_label[3] = new JLabel("Unit"));
+        action_panel[1].add(action_label[4] = new JLabel("Price"));
         
+        action_label[0].setBounds(20,20,65,20);
+        action_label[1].setBounds(130,20,100,20);
+        action_label[2].setBounds(245,20,140,20);
+        action_label[3].setBounds(370,20,50,20);
+        action_label[4].setBounds(470,20,100,20);
+        
+        text[0].setBounds(20,40,65,30);
+        text[1].setBounds(90,40,150,30);
+        text[2].setBounds(245,40,110,30);
+        text[3].setBounds(360,40,50,30);
+        text[4].setBounds(415,40,150,30);
         
         //Right
         panel[5].setLayout(new BorderLayout(0, 0));
@@ -207,12 +278,13 @@ public class Main_Panel extends JPanel
             {
                 addColumn("Product ID");
                 addColumn("Description");
-                addColumn("Avaiable Quantity");
+                addColumn("Available Quantity");
                 addColumn("Unit");
                 addColumn("Price");
                 addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4", "Data 5"});
             }
         });
+        product_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane1 = new JScrollPane(product_table);
         sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
         
@@ -225,6 +297,7 @@ public class Main_Panel extends JPanel
                 addRow(new Object[]{"Data 1", "Data 2"});
             }
         });
+        customer_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane2 = new JScrollPane(customer_table);
         sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
         
@@ -239,21 +312,30 @@ public class Main_Panel extends JPanel
                 addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
             }
         });
+        sales_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane3 = new JScrollPane(sales_table);
         sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
         
-
+        product_table.setDefaultEditor(Object.class, null);
+        customer_table.setDefaultEditor(Object.class, null);
+        sales_table.setDefaultEditor(Object.class, null);
+        splitPane[1] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+                
         button[6].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel[1].removeAll();
                 
-                JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, sub_panel[2], sub_panel[0]);
-                splitPane.setDividerLocation(200);
-                splitPane.setDividerSize(0);
-                splitPane.setEnabled(false);
-                panel[5].add(splitPane,BorderLayout.CENTER);
+                splitPane[1].setTopComponent(sub_panel[2]);
+                splitPane[1].setBottomComponent(sub_panel[0]);
+                splitPane[1].getTopComponent();
+                splitPane[1].getBottomComponent();
+                splitPane[1].setDividerLocation(200);
+                splitPane[1].setDividerSize(0);
+                splitPane[1].setEnabled(false);
+                
+                panel[5].add(splitPane[1]);
                 
                 tabbedPane.add("Customers",sub_panel[1]);
                 tabbedPane.add("Sales",panel[5]);
