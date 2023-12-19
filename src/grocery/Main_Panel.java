@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.sql.ResultSet;
 
 public class Main_Panel extends JPanel
 {
-    Grocery grocery;
     JPanel[] panel = new JPanel[8];
     JPanel[] sub_panel = new JPanel[3];
     JPanel[] action_panel = new JPanel[2];
@@ -19,11 +24,10 @@ public class Main_Panel extends JPanel
     JSplitPane[] splitPane = new JSplitPane[2];
     JTextField[] text = new JTextField[5];
     JLabel[] action_label = new JLabel[5];
+    JTable product_table, customer_table, sales_table;
     
-    Main_Panel(Grocery grocery)
-    {
-        this.grocery = grocery;
-        
+    Main_Panel(Grocery grocery, Functions function)
+    {   
         setLayout(new BorderLayout(0, 0));
         //Main Left and Right
         panel[0] = new JPanel();
@@ -94,6 +98,7 @@ public class Main_Panel extends JPanel
                 panel[0].repaint();
                 panel[1].removeAll();
                 
+                function.read();
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
                 splitPane[0].getTopComponent();
@@ -171,7 +176,8 @@ public class Main_Panel extends JPanel
         button[3].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 System.out.println("Add Product");
                 
                 panel[1].removeAll();
@@ -189,7 +195,22 @@ public class Main_Panel extends JPanel
                 panel[1].revalidate();
                 panel[1].repaint();
                 
-                //create();
+                if(text[0].getText().matches("") &&
+                   text[1].getText().matches("") &&
+                   text[2].getText().matches("") &&
+                   text[3].getText().matches("") &&
+                   text[4].getText().matches(""))
+                {
+                    JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    function.create(Integer.parseInt(text[0].getText()),
+                             text[1].getText(),
+                         Integer.parseInt(text[2].getText()),
+                                   text[3].getText(),
+                                  Double.parseDouble(text[4].getText()));
+                }
             }
         });
         button[4].addActionListener(new ActionListener()
@@ -273,23 +294,12 @@ public class Main_Panel extends JPanel
         panel[5].setLayout(new BorderLayout(0, 0));
         
         sub_panel[0].setLayout(new BorderLayout());
-        JTable product_table = new JTable(new DefaultTableModel()
-        {
-            {
-                addColumn("Product ID");
-                addColumn("Description");
-                addColumn("Available Quantity");
-                addColumn("Unit");
-                addColumn("Price");
-                addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4", "Data 5"});
-            }
-        });
-        product_table.getTableHeader().setReorderingAllowed(false);
+        product_table = new JTable(function.product_table);
         JScrollPane scrollPane1 = new JScrollPane(product_table);
         sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
         
         sub_panel[1].setLayout(new BorderLayout());
-        JTable customer_table = new JTable(new DefaultTableModel()
+        customer_table = new JTable(new DefaultTableModel()
         {
             {
                 addColumn("Name");
@@ -302,7 +312,7 @@ public class Main_Panel extends JPanel
         sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
         
         sub_panel[2].setLayout(new BorderLayout());
-        JTable sales_table = new JTable(new DefaultTableModel()
+        sales_table = new JTable(new DefaultTableModel()
         {
             {
                 addColumn("Date");
@@ -316,11 +326,13 @@ public class Main_Panel extends JPanel
         JScrollPane scrollPane3 = new JScrollPane(sales_table);
         sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
         
-        product_table.setDefaultEditor(Object.class, null);
+        
         customer_table.setDefaultEditor(Object.class, null);
         sales_table.setDefaultEditor(Object.class, null);
         splitPane[1] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-                
+ 
+        
+        
         button[6].addActionListener(new ActionListener()
         {
             @Override

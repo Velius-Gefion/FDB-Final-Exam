@@ -37,8 +37,7 @@ public final class Grocery extends JFrame
         
         function = new Functions(this);
         login_Panel = new Login_Panel(this, function);
-        main_Panel = new Main_Panel(this);
-        
+        main_Panel = new Main_Panel(this, function);
         
         function.connect();
         //show_Login_Panel();

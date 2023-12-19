@@ -1,5 +1,8 @@
 package grocery;
 
+import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -7,18 +10,23 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class Functions
 {
     Grocery grocery;
     private Connection conn;
+    DefaultTableModel product_table;
+    
     
     Functions(Grocery grocery)
     {
         this.grocery = grocery;
+        
     }
     
     public void connect()
@@ -51,7 +59,7 @@ public class Functions
     public void create(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_ID, PRODUCT_DESCRIPTION, PRODUCT_AVAIABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_ID, PRODUCT_DESCRIPTION, PRODUCT_AVAILABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?, ?)");
             stmt.setInt(1, productId);
             stmt.setString(2, productDescription);
             stmt.setInt(3, productAvailableQuantity);
@@ -60,6 +68,37 @@ public class Functions
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
+    public void read()
+    {      
+        try {
+            Statement statement = conn.createStatement();
+            String query = "SELECT * FROM products";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                product_table.addColumn(metaData.getColumnName(i));
+            }
+
+            while (resultSet.next()) {
+                Object[] row = new Object[columnCount];
+                for (int i = 1; i <= columnCount; i++) {
+                    row[i - 1] = resultSet.getObject(i);
+                }
+                product_table.addRow(row);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
         }
     }
     
