@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class Main_Panel extends JPanel
 {
@@ -25,9 +26,12 @@ public class Main_Panel extends JPanel
     JTextField[] text = new JTextField[5];
     JLabel[] action_label = new JLabel[5];
     JTable product_table, customer_table, sales_table;
+    //private DefaultTableModel table_product_function;
+    //Functions function;
     
     Main_Panel(Grocery grocery, Functions function)
     {   
+        //this.function = function;
         setLayout(new BorderLayout(0, 0));
         //Main Left and Right
         panel[0] = new JPanel();
@@ -98,7 +102,9 @@ public class Main_Panel extends JPanel
                 panel[0].repaint();
                 panel[1].removeAll();
                 
+                text[0].setEnabled(false);
                 function.read();
+                
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
                 splitPane[0].getTopComponent();
@@ -178,9 +184,31 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Add Product");
+                text[0].setEnabled(false);
+                text[1].setEnabled(true);
+                text[2].setEnabled(true);
+                text[3].setEnabled(true);
+                text[4].setEnabled(true);
+                
+                if(text[1].getText().matches("") &&
+                   text[2].getText().matches("") &&
+                   text[3].getText().matches("") &&
+                   text[4].getText().matches(""))
+                {
+                    JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    function.create(text[1].getText(),
+                                Integer.parseInt(text[2].getText()),
+                                          text[3].getText(),
+                                         Double.parseDouble(text[4].getText()));
+                    clear();
+                }
                 
                 panel[1].removeAll();
+                
+                function.read();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -194,6 +222,17 @@ public class Main_Panel extends JPanel
                 panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
+            }
+        });
+        button[4].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                text[0].setEnabled(false);
+                text[1].setEnabled(true);
+                text[2].setEnabled(true);
+                text[3].setEnabled(true);
+                text[4].setEnabled(true);
                 
                 if(text[0].getText().matches("") &&
                    text[1].getText().matches("") &&
@@ -205,21 +244,17 @@ public class Main_Panel extends JPanel
                 }
                 else
                 {
-                    function.create(Integer.parseInt(text[0].getText()),
+                    function.update(Integer.parseInt(text[0].getText()),
                              text[1].getText(),
                          Integer.parseInt(text[2].getText()),
                                    text[3].getText(),
                                   Double.parseDouble(text[4].getText()));
+                    clear();
                 }
-            }
-        });
-        button[4].addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Update Product");
                 
                 panel[1].removeAll();
+                
+                function.read();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -233,8 +268,6 @@ public class Main_Panel extends JPanel
                 panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
-                
-                //update();
             }
         });
         button[5].addActionListener(new ActionListener()
@@ -244,6 +277,14 @@ public class Main_Panel extends JPanel
                 System.out.println("Delete Product");
                 
                 panel[1].removeAll();
+                
+                text[0].setEnabled(true);
+                text[1].setEnabled(false);
+                text[2].setEnabled(false);
+                text[3].setEnabled(false);
+                text[4].setEnabled(false);
+                
+                function.read();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -294,7 +335,25 @@ public class Main_Panel extends JPanel
         panel[5].setLayout(new BorderLayout(0, 0));
         
         sub_panel[0].setLayout(new BorderLayout());
-        product_table = new JTable(function.product_table);
+        function.table_product_function = new DefaultTableModel()
+        {
+            {
+                addColumn("Product ID");
+                addColumn("Description");
+                addColumn("Quantity");
+                addColumn("Unit");
+                addColumn("Price");
+                
+                
+            }
+        };
+        product_table = new JTable(function.table_product_function);
+        product_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        product_table.getColumnModel().getColumn(1).setPreferredWidth(250);
+        product_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        product_table.getColumnModel().getColumn(3).setPreferredWidth(50);
+        product_table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        product_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane1 = new JScrollPane(product_table);
         sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
         
@@ -327,11 +386,25 @@ public class Main_Panel extends JPanel
         sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
         
         
+        product_table.setDefaultEditor(Object.class, null);
         customer_table.setDefaultEditor(Object.class, null);
         sales_table.setDefaultEditor(Object.class, null);
         splitPane[1] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
  
-        
+        product_table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = product_table.rowAtPoint(e.getPoint());
+                int col = product_table.columnAtPoint(e.getPoint());
+
+                if (row >= 0 && col >= 0) {
+                    for(int i = 0;i < 5;i++)
+                    {
+                        text[i].setText(String.valueOf(product_table.getValueAt(row, i)));
+                    }
+                }
+            }
+        });
         
         button[6].addActionListener(new ActionListener()
         {
@@ -365,5 +438,13 @@ public class Main_Panel extends JPanel
         
         //Right
         panel[7].setLayout(new BorderLayout(0, 0));
+    }
+    
+    public void clear()
+    {
+        for(int i = 0;i < 5;i++)
+        {
+            text[i].setText("");
+        }
     }
 }

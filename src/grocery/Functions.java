@@ -19,9 +19,8 @@ import javax.swing.table.DefaultTableModel;
 public class Functions
 {
     Grocery grocery;
-    private Connection conn;
-    DefaultTableModel product_table;
-    
+    Connection conn;
+    DefaultTableModel table_product_function;
     
     Functions(Grocery grocery)
     {
@@ -56,56 +55,54 @@ public class Functions
         }
     }
     
-    public void create(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
+    public void create(String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_ID, PRODUCT_DESCRIPTION, PRODUCT_AVAILABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?, ?)");
-            stmt.setInt(1, productId);
-            stmt.setString(2, productDescription);
-            stmt.setInt(3, productAvailableQuantity);
-            stmt.setString(4, productUnit);
-            stmt.setDouble(5, productPrice);
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_DESCRIPTION, PRODUCT_AVAILABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?)");
+            stmt.setString(1, productDescription);
+            stmt.setInt(2, productAvailableQuantity);
+            stmt.setString(3, productUnit);
+            stmt.setDouble(4, productPrice);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    
-    
-    public void read()
-    {      
+     public void read()
+    {
         try {
-            Statement statement = conn.createStatement();
-            String query = "SELECT * FROM products";
-            ResultSet resultSet = statement.executeQuery(query);
+            try (Statement statement = conn.createStatement()) {
+                String query = "SELECT * FROM products";
+                try (ResultSet resultSet = statement.executeQuery(query)) {
+                    java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    
+                    int rowCount = table_product_function.getRowCount();
+                    for(int i = rowCount - 1; i >= 0; i--)
+                    {
+                        table_product_function.removeRow(i);
+                    }
 
-            java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                product_table.addColumn(metaData.getColumnName(i));
-            }
-
-            while (resultSet.next()) {
-                Object[] row = new Object[columnCount];
-                for (int i = 1; i <= columnCount; i++) {
-                    row[i - 1] = resultSet.getObject(i);
+                    while (resultSet.next()) {
+                        Object[] row = new Object[columnCount];
+                        for (int i = 1; i <= columnCount; i++) {
+                            row[i - 1] = resultSet.getObject(i);
+                        }
+                        table_product_function.addRow(row);
+                    }
                 }
-                product_table.addRow(row);
             }
-
-            resultSet.close();
-            statement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
         }
+        
     }
     
     public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
-            PreparedStatement stmt = conn.prepareStatement("UPDATE products SET PRODUCT_DESCRIPTION = ?, PRODUCT_AVAIABLE_QUANTITY = ?, PRODUCT_UNIT = ?, PRODUCT_PRICE = ? WHERE PRODUCT_ID = ?");
+            PreparedStatement stmt = conn.prepareStatement("UPDATE products SET PRODUCT_DESCRIPTION = ?, PRODUCT_AVAILABLE_QUANTITY = ?, PRODUCT_UNIT = ?, PRODUCT_PRICE = ? WHERE PRODUCT_ID = ?");
             stmt.setString(1, productDescription);
             stmt.setInt(2, productAvailableQuantity);
             stmt.setString(3, productUnit);
@@ -134,7 +131,7 @@ public class Functions
         customerName = JOptionPane.showInputDialog(null, "Enter customer name:");
         customerEmail = JOptionPane.showInputDialog(null, "Enter customer email:");
         // Show list of products and ask for quantity
-        // Subtract quantity from PRODUCT_AVAIABLE_QUANTITY in the database
+        // Subtract quantity from PRODUCT_AVAILABLE_QUANTITY in the database
         totalAmount = 0.0;
         // Compute change and display total amount and change
     }
@@ -151,7 +148,7 @@ public class Functions
                 XSSFRow row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(rs.getInt("PRODUCT_ID"));
                 row.createCell(1).setCellValue(rs.getString("PRODUCT_DESCRIPTION"));
-                row.createCell(2).setCellValue(rs.getInt("PRODUCT_AVAIABLE_QUANTITY"));
+                row.createCell(2).setCellValue(rs.getInt("PRODUCT_AVAILABLE_QUANTITY"));
                 row.createCell(3).setCellValue(rs.getString("PRODUCT_UNIT"));
                 row.createCell(4).setCellValue(rs.getDouble("PRODUCT_PRICE"));
             }
