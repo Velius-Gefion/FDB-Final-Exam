@@ -69,7 +69,7 @@ public class Functions
         }
     }
     
-     public void read()
+    public void read_product()
     {
         try {
             try (Statement statement = conn.createStatement()) {
@@ -96,7 +96,35 @@ public class Functions
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
         }
-        
+    }
+    
+    public void read_customer()
+    {
+        try {
+            try (Statement statement = conn.createStatement()) {
+                String query = "SELECT * FROM products";
+                try (ResultSet resultSet = statement.executeQuery(query)) {
+                    java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    
+                    int rowCount = table_product_function.getRowCount();
+                    for(int i = rowCount - 1; i >= 0; i--)
+                    {
+                        table_product_function.removeRow(i);
+                    }
+
+                    while (resultSet.next()) {
+                        Object[] row = new Object[columnCount];
+                        for (int i = 1; i <= columnCount; i++) {
+                            row[i - 1] = resultSet.getObject(i);
+                        }
+                        table_product_function.addRow(row);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
+        }
     }
     
     public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)

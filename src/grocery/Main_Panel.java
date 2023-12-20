@@ -103,7 +103,7 @@ public class Main_Panel extends JPanel
                 panel[1].removeAll();
                 
                 text[0].setEnabled(false);
-                function.read();
+                function.read_product();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -208,7 +208,7 @@ public class Main_Panel extends JPanel
                 
                 panel[1].removeAll();
                 
-                function.read();
+                function.read_product();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -254,7 +254,7 @@ public class Main_Panel extends JPanel
                 
                 panel[1].removeAll();
                 
-                function.read();
+                function.read_product();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -284,7 +284,7 @@ public class Main_Panel extends JPanel
                 text[3].setEnabled(false);
                 text[4].setEnabled(false);
                 
-                function.read();
+                function.read_product();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
                 splitPane[0].setBottomComponent(action_panel[1]);
@@ -343,8 +343,6 @@ public class Main_Panel extends JPanel
                 addColumn("Quantity");
                 addColumn("Unit");
                 addColumn("Price");
-                
-                
             }
         };
         product_table = new JTable(function.table_product_function);
@@ -381,6 +379,10 @@ public class Main_Panel extends JPanel
                 addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
             }
         });
+        sales_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        sales_table.getColumnModel().getColumn(1).setPreferredWidth(50);
+        sales_table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        sales_table.getColumnModel().getColumn(3).setPreferredWidth(250);
         sales_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane3 = new JScrollPane(sales_table);
         sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
@@ -434,10 +436,10 @@ public class Main_Panel extends JPanel
         //Form 1.2 panel[4] panel [5]
         
         //Left
-        panel[6].setLayout(new BorderLayout(0, 0));
+        panel[6].setLayout(null);
         
         //Right
-        panel[7].setLayout(new BorderLayout(0, 0));
+        panel[7].setLayout(null);
     }
     
     public void clear()
