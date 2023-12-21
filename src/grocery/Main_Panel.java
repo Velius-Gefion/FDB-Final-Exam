@@ -26,6 +26,8 @@ public class Main_Panel extends JPanel
     JTextField[] text = new JTextField[5];
     JLabel[] action_label = new JLabel[5];
     JTable product_table, customer_table, sales_table;
+    JButton[] back_button = new JButton[2];
+    JButton[] purchase_button = new JButton[3];
     //private DefaultTableModel table_product_function;
     //Functions function;
     
@@ -149,7 +151,7 @@ public class Main_Panel extends JPanel
         label[0].setBounds(15,10,200,30);
         
         //Back
-        panel[4].add(button[2] = new JButton("Back"));
+        panel[4].add(back_button[0] = new JButton("Back"));
         //Add
         panel[4].add(button[3] = new JButton("Add Product"));
         //Update
@@ -159,13 +161,13 @@ public class Main_Panel extends JPanel
         //Records (Products, Customer, Sales)
         panel[4].add(button[6] = new JButton("Records"));
         
-        button[2].setBounds(45,50,110,30);
+        back_button[0].setBounds(45,50,110,30);
         button[3].setBounds(100,100,70,70);
         button[4].setBounds(100,190,70,70);
         button[5].setBounds(100,280,70,70);
         button[6].setBounds(100,370,70,70);
         
-        button[2].addActionListener(new ActionListener()
+        back_button[0].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -183,13 +185,7 @@ public class Main_Panel extends JPanel
         {
             @Override
             public void actionPerformed(ActionEvent e)
-            {
-                text[0].setEnabled(false);
-                text[1].setEnabled(true);
-                text[2].setEnabled(true);
-                text[3].setEnabled(true);
-                text[4].setEnabled(true);
-                
+            {               
                 if(text[1].getText().matches("") &&
                    text[2].getText().matches("") &&
                    text[3].getText().matches("") &&
@@ -227,15 +223,9 @@ public class Main_Panel extends JPanel
         button[4].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                text[0].setEnabled(false);
-                text[1].setEnabled(true);
-                text[2].setEnabled(true);
-                text[3].setEnabled(true);
-                text[4].setEnabled(true);
-                
-                if(text[0].getText().matches("") &&
-                   text[1].getText().matches("") &&
+            public void actionPerformed(ActionEvent e)
+            {   
+                if(text[1].getText().matches("") &&
                    text[2].getText().matches("") &&
                    text[3].getText().matches("") &&
                    text[4].getText().matches(""))
@@ -273,16 +263,19 @@ public class Main_Panel extends JPanel
         button[5].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Delete Product");
+            public void actionPerformed(ActionEvent e)
+            {
+                if(text[0].getText().matches(""))
+                {
+                    JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else
+                {
+                    function.delete(Integer.parseInt(text[0].getText()));
+                    clear();
+                }
                 
                 panel[1].removeAll();
-                
-                text[0].setEnabled(true);
-                text[1].setEnabled(false);
-                text[2].setEnabled(false);
-                text[3].setEnabled(false);
-                text[4].setEnabled(false);
                 
                 function.read_product();
                 
@@ -298,8 +291,6 @@ public class Main_Panel extends JPanel
                 panel[1].add(action_panel[0]);
                 panel[1].revalidate();
                 panel[1].repaint();
-                
-                //delete();
             }
         });
         
@@ -413,6 +404,7 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e) {
                 panel[1].removeAll();
+                clear();
                 
                 splitPane[1].setTopComponent(sub_panel[2]);
                 splitPane[1].setBottomComponent(sub_panel[0]);
@@ -437,9 +429,38 @@ public class Main_Panel extends JPanel
         
         //Left
         panel[6].setLayout(null);
+        panel[6].setBackground(Color.LIGHT_GRAY);
+        panel[6].add(purchase_button[0] = new JButton("Add"));
+        panel[6].add(purchase_button[1] = new JButton("Remove"));
+        panel[6].add(purchase_button[2] = new JButton("Checkout"));
+        panel[6].add(back_button[1] = new JButton("Back"));
+        panel[6].add(label[0] = new JLabel("Grocery Menu"));
+        label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        label[0].setBounds(15,10,200,30);
+        
+        back_button[1].setBounds(45,50,110,30);
+        purchase_button[0].setBounds(100,100,70,70);
+        purchase_button[1].setBounds(100,190,70,70);
+        purchase_button[2].setBounds(100,280,70,70);
+        
+        back_button[1].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panel[0].removeAll();
+                panel[0].add(panel[2]);
+                panel[0].revalidate();
+                panel[0].repaint();
+                panel[1].removeAll();
+                panel[1].add(panel[3]);
+                panel[1].revalidate();
+                panel[1].repaint();
+            }
+        });
         
         //Right
-        panel[7].setLayout(null);
+        panel[7].setBackground(Color.DARK_GRAY);
+        panel[7].setLayout(new BorderLayout(0,0));
     }
     
     public void clear()
