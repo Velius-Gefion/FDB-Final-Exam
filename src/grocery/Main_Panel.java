@@ -11,23 +11,47 @@ import javax.swing.table.DefaultTableModel;
 
 public class Main_Panel extends JPanel
 {
+    JPanel[] main_panel = new JPanel[2];
+    JPanel[] menu_panel = new JPanel[5];
+    JPanel[] purchase_panel = new JPanel[4];
+    
     JPanel[] panel = new JPanel[8];
     JPanel[] sub_panel = new JPanel[3];
     JPanel[] action_panel = new JPanel[2];
     JButton[] button = new JButton[10];
     JLabel[] label = new JLabel[10];
     JTabbedPane[] tabbedPane = new JTabbedPane[2];
-    JSplitPane[] splitPane = new JSplitPane[2];
+    JSplitPane[] splitPane = new JSplitPane[3];
     JTextField[] text = new JTextField[5];
     JLabel[] action_label = new JLabel[5];
-    JTable product_table, customer_table, sales_table, checkout_table;
     JButton[] back_button = new JButton[2];
     JButton[] purchase_button = new JButton[3];
+    JTable product_table, customer_table, sales_table, checkout_table;
     
     Main_Panel(Grocery grocery, Functions function)
     {   
         setLayout(new BorderLayout(0, 0));
-        //Main Left and Right
+        for(int i = 0;i < 5;i++)
+        {
+            menu_panel[i] = new JPanel();
+            if (i < 4)
+            {
+                purchase_panel[0] = new JPanel();
+                if (i < 3)
+                {
+                    System.out.println("Placeholder for 3: " + i);
+                    if (i < 2)
+                    {
+                        main_panel[i] = new JPanel();
+                        if (i < 1)
+                        {
+                            System.out.println("Placeholder for 1: " + i + "\n");
+                        }
+                    }
+                }
+            }
+        }
+        
         for(int i = 0;i < 8; i++)
         {
             panel[i] = new JPanel();
@@ -49,17 +73,17 @@ public class Main_Panel extends JPanel
         
         //Main Panel
         
-        add(panel[0],BorderLayout.WEST);
-        add(panel[1],BorderLayout.EAST);
+        add(main_panel[0],BorderLayout.WEST);
+        add(main_panel[1],BorderLayout.EAST);
         
-        panel[0].setPreferredSize(new Dimension(200,100));
-        panel[1].setPreferredSize(new Dimension(585,100));
+        main_panel[0].setPreferredSize(new Dimension(200,100));
+        main_panel[1].setPreferredSize(new Dimension(585,100));
         
-        panel[0].setLayout(new BorderLayout(0, 0));
-        panel[1].setLayout(new BorderLayout(0, 0));
+        main_panel[0].setLayout(new BorderLayout(0, 0));
+        main_panel[1].setLayout(new BorderLayout(0, 0));
         
-        panel[0].add(panel[2]);
-        panel[1].add(panel[3]);
+        main_panel[0].add(panel[2]);
+        main_panel[1].add(panel[3]);
         
         
         //Left
@@ -295,11 +319,12 @@ public class Main_Panel extends JPanel
                 addColumn("Customer ID");
                 addColumn("Name");
                 addColumn("Email");
-                
-                addRow(new Object[]{"Data 1", "Data 2"});
             }
         };
         customer_table = new JTable(function.table_customer_function);
+        customer_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        customer_table.getColumnModel().getColumn(1).setPreferredWidth(150);
+        customer_table.getColumnModel().getColumn(2).setPreferredWidth(200);
         customer_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane2 = new JScrollPane(customer_table);
         sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
@@ -309,9 +334,11 @@ public class Main_Panel extends JPanel
         {
             {
                 addColumn("Date");
-                addColumn("Time");
+                addColumn("Time");                
+                addColumn("Sales ID");
+                addColumn("Customer ID");
                 addColumn("Name");
-                addColumn("Email");
+                addColumn("Sales");
                 addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
             }
         };
@@ -359,6 +386,8 @@ public class Main_Panel extends JPanel
                 splitPane[1].setEnabled(false);
                 
                 panel[5].add(splitPane[1]);
+                
+                function.read_customer();
                 
                 tabbedPane[0].add("Customers",sub_panel[1]);
                 tabbedPane[0].add("Sales",panel[5]);
@@ -450,45 +479,45 @@ public class Main_Panel extends JPanel
     {
         if (panel_1 != null)
         {
-            panel[0].removeAll();
-            panel[0].add(panel_1);
-            panel[0].revalidate();
-            panel[0].repaint();
+            main_panel[0].removeAll();
+            main_panel[0].add(panel_1);
+            main_panel[0].revalidate();
+            main_panel[0].repaint();
         }
-        panel[1].removeAll();
-        panel[1].add(panel_2);
-        panel[1].revalidate();
-        panel[1].repaint();
+        main_panel[1].removeAll();
+        main_panel[1].add(panel_2);
+        main_panel[1].revalidate();
+        main_panel[1].repaint();
     }
     
     public void change_panel(JPanel panel_1, JTabbedPane panel_2)
     {
         if (panel_1 != null)
         {
-            panel[0].removeAll();
-            panel[0].add(panel_1);
-            panel[0].revalidate();
-            panel[0].repaint();
+            main_panel[0].removeAll();
+            main_panel[0].add(panel_1);
+            main_panel[0].revalidate();
+            main_panel[0].repaint();
         }
-        panel[1].removeAll();
-        panel[1].add(panel_2);
-        panel[1].revalidate();
-        panel[1].repaint();
+        main_panel[1].removeAll();
+        main_panel[1].add(panel_2);
+        main_panel[1].revalidate();
+        main_panel[1].repaint();
     }
     
     public void change_panel(JPanel panel_1, JSplitPane panel_2)
     {
         if (panel_1 != null)
         {
-            panel[0].removeAll();
-            panel[0].add(panel_1);
-            panel[0].revalidate();
-            panel[0].repaint();
+            main_panel[0].removeAll();
+            main_panel[0].add(panel_1);
+            main_panel[0].revalidate();
+            main_panel[0].repaint();
         }
-        panel[1].removeAll();
-        panel[1].add(panel_2);
-        panel[1].revalidate();
-        panel[1].repaint();
+        main_panel[1].removeAll();
+        main_panel[1].add(panel_2);
+        main_panel[1].revalidate();
+        main_panel[1].repaint();
     }
     
     public void clear()
