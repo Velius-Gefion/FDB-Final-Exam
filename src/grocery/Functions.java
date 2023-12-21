@@ -1,10 +1,5 @@
 package grocery;
 
-import com.mysql.cj.jdbc.result.ResultSetMetaData;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,7 +15,7 @@ public class Functions
 {
     Grocery grocery;
     Connection conn;
-    DefaultTableModel table_product_function;
+    DefaultTableModel table_product_function, table_customer_function, table_sales_function, table_checkout_function;
     
     Functions(Grocery grocery)
     {
@@ -102,15 +97,15 @@ public class Functions
     {
         try {
             try (Statement statement = conn.createStatement()) {
-                String query = "SELECT * FROM products";
+                String query = "SELECT * FROM customer";
                 try (ResultSet resultSet = statement.executeQuery(query)) {
                     java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
                     int columnCount = metaData.getColumnCount();
                     
-                    int rowCount = table_product_function.getRowCount();
+                    int rowCount = table_customer_function.getRowCount();
                     for(int i = rowCount - 1; i >= 0; i--)
                     {
-                        table_product_function.removeRow(i);
+                        table_customer_function.removeRow(i);
                     }
 
                     while (resultSet.next()) {
@@ -118,7 +113,7 @@ public class Functions
                         for (int i = 1; i <= columnCount; i++) {
                             row[i - 1] = resultSet.getObject(i);
                         }
-                        table_product_function.addRow(row);
+                        table_customer_function.addRow(row);
                     }
                 }
             }
@@ -126,6 +121,37 @@ public class Functions
             JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
         }
     }
+    
+    public void read_sales()
+    {
+        try {
+            try (Statement statement = conn.createStatement()) {
+                String query = "SELECT * FROM customer";
+                try (ResultSet resultSet = statement.executeQuery(query)) {
+                    java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    
+                    int rowCount = table_sales_function.getRowCount();
+                    for(int i = rowCount - 1; i >= 0; i--)
+                    {
+                        table_sales_function.removeRow(i);
+                    }
+
+                    while (resultSet.next()) {
+                        Object[] row = new Object[columnCount];
+                        for (int i = 1; i <= columnCount; i++) {
+                            row[i - 1] = resultSet.getObject(i);
+                        }
+                        table_sales_function.addRow(row);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
+        }
+    }
+    
+    
     
     public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {

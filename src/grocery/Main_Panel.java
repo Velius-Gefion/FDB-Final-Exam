@@ -6,13 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class Main_Panel extends JPanel
 {
@@ -21,42 +16,36 @@ public class Main_Panel extends JPanel
     JPanel[] action_panel = new JPanel[2];
     JButton[] button = new JButton[10];
     JLabel[] label = new JLabel[10];
-    JTabbedPane tabbedPane = new JTabbedPane();
+    JTabbedPane[] tabbedPane = new JTabbedPane[2];
     JSplitPane[] splitPane = new JSplitPane[2];
     JTextField[] text = new JTextField[5];
     JLabel[] action_label = new JLabel[5];
-    JTable product_table, customer_table, sales_table;
+    JTable product_table, customer_table, sales_table, checkout_table;
     JButton[] back_button = new JButton[2];
     JButton[] purchase_button = new JButton[3];
-    //private DefaultTableModel table_product_function;
-    //Functions function;
     
     Main_Panel(Grocery grocery, Functions function)
     {   
-        //this.function = function;
         setLayout(new BorderLayout(0, 0));
         //Main Left and Right
-        panel[0] = new JPanel();
-        panel[1] = new JPanel();
-        panel[2] = new JPanel();
-        panel[3] = new JPanel();
-        panel[4] = new JPanel();
-        panel[5] = new JPanel();
-        panel[6] = new JPanel();
-        panel[7] = new JPanel();
-        
-        sub_panel[0] = new JPanel();
-        sub_panel[1] = new JPanel();
-        sub_panel[2] = new JPanel();
-        
-        action_panel[0] = new JPanel();
-        action_panel[1] = new JPanel();
-        
-        text[0] = new JTextField();
-        text[1] = new JTextField();
-        text[2] = new JTextField();
-        text[3] = new JTextField();
-        text[4] = new JTextField();
+        for(int i = 0;i < 8; i++)
+        {
+            panel[i] = new JPanel();
+            
+            if (i < 5)
+            {
+                text[i] = new JTextField();
+                if(i < 3)
+                {
+                    sub_panel[i] = new JPanel();
+                    if (i < 2)
+                    {
+                        action_panel[i] = new JPanel();
+                        tabbedPane[i] = new JTabbedPane();
+                    }
+                }
+            }
+        }
         
         //Main Panel
         
@@ -97,14 +86,8 @@ public class Main_Panel extends JPanel
         button[0].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                panel[0].removeAll();
-                panel[0].add(panel[4]);
-                panel[0].revalidate();
-                panel[0].repaint();
-                panel[1].removeAll();
-                
-                text[0].setEnabled(false);
+            public void actionPerformed(ActionEvent e)
+            {
                 function.read_product();
                 
                 splitPane[0].setTopComponent(sub_panel[0]);
@@ -116,23 +99,21 @@ public class Main_Panel extends JPanel
                 splitPane[0].setEnabled(false);
                 action_panel[0].add(splitPane[0]);
                 
-                panel[1].add(action_panel[0]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                change_panel(panel[4], action_panel[0]);
             }
         });
         button[1].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                panel[0].removeAll();
-                panel[0].add(panel[6]);
-                panel[0].revalidate();
-                panel[0].repaint();
-                panel[1].removeAll();
-                panel[1].add(panel[7]);
-                panel[1].revalidate();
-                panel[1].repaint();
+            public void actionPerformed(ActionEvent e)
+            {
+                function.read_product();
+                
+                tabbedPane[1].add("Products",sub_panel[0]);
+                tabbedPane[1].add("Checkout",panel[7]);
+                
+                clear();
+                change_panel(panel[6], tabbedPane[1]);
             }
         });
         
@@ -171,14 +152,7 @@ public class Main_Panel extends JPanel
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel[0].removeAll();
-                panel[0].add(panel[2]);
-                panel[0].revalidate();
-                panel[0].repaint();
-                panel[1].removeAll();
-                panel[1].add(panel[3]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                change_panel(panel[2],panel[3]);
             }
         });
         button[3].addActionListener(new ActionListener()
@@ -193,6 +167,10 @@ public class Main_Panel extends JPanel
                 {
                     JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+                else if(productExists(text[1].getText()))
+                {
+                    JOptionPane.showMessageDialog(null, "Product already exist", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 else
                 {
                     function.create(text[1].getText(),
@@ -202,22 +180,9 @@ public class Main_Panel extends JPanel
                     clear();
                 }
                 
-                panel[1].removeAll();
-                
                 function.read_product();
-                
-                splitPane[0].setTopComponent(sub_panel[0]);
-                splitPane[0].setBottomComponent(action_panel[1]);
-                splitPane[0].getTopComponent();
-                splitPane[0].getBottomComponent();
-                splitPane[0].setDividerLocation(360);
-                splitPane[0].setDividerSize(0);
-                splitPane[0].setEnabled(false);
-                action_panel[0].add(splitPane[0]);
-                
-                panel[1].add(action_panel[0]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                product_panel();
+                change_panel(null,action_panel[0]);
             }
         });
         button[4].addActionListener(new ActionListener()
@@ -232,6 +197,10 @@ public class Main_Panel extends JPanel
                 {
                     JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+                else if(productExists(text[1].getText()))
+                {
+                    JOptionPane.showMessageDialog(null, "Please change something", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 else
                 {
                     function.update(Integer.parseInt(text[0].getText()),
@@ -242,22 +211,9 @@ public class Main_Panel extends JPanel
                     clear();
                 }
                 
-                panel[1].removeAll();
-                
                 function.read_product();
-                
-                splitPane[0].setTopComponent(sub_panel[0]);
-                splitPane[0].setBottomComponent(action_panel[1]);
-                splitPane[0].getTopComponent();
-                splitPane[0].getBottomComponent();
-                splitPane[0].setDividerLocation(360);
-                splitPane[0].setDividerSize(0);
-                splitPane[0].setEnabled(false);
-                action_panel[0].add(splitPane[0]);
-                
-                panel[1].add(action_panel[0]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                product_panel();
+                change_panel(null,action_panel[0]);
             }
         });
         button[5].addActionListener(new ActionListener()
@@ -275,22 +231,9 @@ public class Main_Panel extends JPanel
                     clear();
                 }
                 
-                panel[1].removeAll();
-                
                 function.read_product();
-                
-                splitPane[0].setTopComponent(sub_panel[0]);
-                splitPane[0].setBottomComponent(action_panel[1]);
-                splitPane[0].getTopComponent();
-                splitPane[0].getBottomComponent();
-                splitPane[0].setDividerLocation(360);
-                splitPane[0].setDividerSize(0);
-                splitPane[0].setEnabled(false);
-                action_panel[0].add(splitPane[0]);
-                
-                panel[1].add(action_panel[0]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                product_panel();
+                change_panel(null,action_panel[0]);
             }
         });
         
@@ -298,11 +241,10 @@ public class Main_Panel extends JPanel
         splitPane[0] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         
         action_panel[1].setLayout(null);
-        action_panel[1].add(text[0]);
-        action_panel[1].add(text[1]);
-        action_panel[1].add(text[2]);
-        action_panel[1].add(text[3]);
-        action_panel[1].add(text[4]);
+        for(int i = 0;i < 5;i++)
+        {
+            action_panel[1].add(text[i]);
+        }
         
         action_panel[1].add(action_label[0] = new JLabel("Product ID"));
         action_panel[1].add(action_label[1] = new JLabel("Description"));
@@ -347,20 +289,23 @@ public class Main_Panel extends JPanel
         sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
         
         sub_panel[1].setLayout(new BorderLayout());
-        customer_table = new JTable(new DefaultTableModel()
+        function.table_customer_function = new DefaultTableModel()
         {
             {
+                addColumn("Customer ID");
                 addColumn("Name");
                 addColumn("Email");
+                
                 addRow(new Object[]{"Data 1", "Data 2"});
             }
-        });
+        };
+        customer_table = new JTable(function.table_customer_function);
         customer_table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollPane2 = new JScrollPane(customer_table);
         sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
         
         sub_panel[2].setLayout(new BorderLayout());
-        sales_table = new JTable(new DefaultTableModel()
+        function.table_sales_function = new DefaultTableModel()
         {
             {
                 addColumn("Date");
@@ -369,7 +314,8 @@ public class Main_Panel extends JPanel
                 addColumn("Email");
                 addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
             }
-        });
+        };
+        sales_table = new JTable(function.table_sales_function);
         sales_table.getColumnModel().getColumn(0).setPreferredWidth(50);
         sales_table.getColumnModel().getColumn(1).setPreferredWidth(50);
         sales_table.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -402,10 +348,8 @@ public class Main_Panel extends JPanel
         button[6].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                panel[1].removeAll();
-                clear();
-                
+            public void actionPerformed(ActionEvent e)
+            {
                 splitPane[1].setTopComponent(sub_panel[2]);
                 splitPane[1].setBottomComponent(sub_panel[0]);
                 splitPane[1].getTopComponent();
@@ -416,12 +360,11 @@ public class Main_Panel extends JPanel
                 
                 panel[5].add(splitPane[1]);
                 
-                tabbedPane.add("Customers",sub_panel[1]);
-                tabbedPane.add("Sales",panel[5]);
+                tabbedPane[0].add("Customers",sub_panel[1]);
+                tabbedPane[0].add("Sales",panel[5]);
                 
-                panel[1].add(tabbedPane);
-                panel[1].revalidate();
-                panel[1].repaint();
+                clear();
+                change_panel(null, tabbedPane[0]);
             }
         });
         
@@ -447,20 +390,105 @@ public class Main_Panel extends JPanel
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panel[0].removeAll();
-                panel[0].add(panel[2]);
-                panel[0].revalidate();
-                panel[0].repaint();
-                panel[1].removeAll();
-                panel[1].add(panel[3]);
-                panel[1].revalidate();
-                panel[1].repaint();
+                change_panel(panel[2],panel[3]);
             }
         });
         
         //Right
         panel[7].setBackground(Color.DARK_GRAY);
         panel[7].setLayout(new BorderLayout(0,0));
+        
+        checkout_table = new JTable(new DefaultTableModel()
+        {
+            {
+                addColumn("Product ID");
+                addColumn("Description");
+                addColumn("Quantity");
+                addColumn("Unit");
+                addColumn("Price");
+            }
+        });
+        
+        checkout_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        checkout_table.getColumnModel().getColumn(1).setPreferredWidth(250);
+        checkout_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        checkout_table.getColumnModel().getColumn(3).setPreferredWidth(50);
+        checkout_table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        checkout_table.getTableHeader().setReorderingAllowed(false);
+        JScrollPane scrollPane4 = new JScrollPane(checkout_table);
+        panel[7].add(scrollPane4, BorderLayout.CENTER);
+        
+        
+    }
+    
+    private boolean productExists(String productName)
+    {
+        for (int row = 0; row < product_table.getRowCount(); row++)
+        {
+            Object value = product_table.getValueAt(row, 1);
+            if (value != null && value.toString().equalsIgnoreCase(productName))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void product_panel()
+    {
+        splitPane[0].setTopComponent(sub_panel[0]);
+        splitPane[0].setBottomComponent(action_panel[1]);
+        splitPane[0].getTopComponent();
+        splitPane[0].getBottomComponent();
+        splitPane[0].setDividerLocation(360);
+        splitPane[0].setDividerSize(0);
+        splitPane[0].setEnabled(false);
+        action_panel[0].add(splitPane[0]);
+    }
+    
+    public void change_panel(JPanel panel_1, JPanel panel_2)
+    {
+        if (panel_1 != null)
+        {
+            panel[0].removeAll();
+            panel[0].add(panel_1);
+            panel[0].revalidate();
+            panel[0].repaint();
+        }
+        panel[1].removeAll();
+        panel[1].add(panel_2);
+        panel[1].revalidate();
+        panel[1].repaint();
+    }
+    
+    public void change_panel(JPanel panel_1, JTabbedPane panel_2)
+    {
+        if (panel_1 != null)
+        {
+            panel[0].removeAll();
+            panel[0].add(panel_1);
+            panel[0].revalidate();
+            panel[0].repaint();
+        }
+        panel[1].removeAll();
+        panel[1].add(panel_2);
+        panel[1].revalidate();
+        panel[1].repaint();
+    }
+    
+    public void change_panel(JPanel panel_1, JSplitPane panel_2)
+    {
+        if (panel_1 != null)
+        {
+            panel[0].removeAll();
+            panel[0].add(panel_1);
+            panel[0].revalidate();
+            panel[0].repaint();
+        }
+        panel[1].removeAll();
+        panel[1].add(panel_2);
+        panel[1].revalidate();
+        panel[1].repaint();
     }
     
     public void clear()
