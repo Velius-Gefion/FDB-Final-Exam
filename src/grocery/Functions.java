@@ -151,8 +151,6 @@ public class Functions
         }
     }
     
-    
-    
     public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {

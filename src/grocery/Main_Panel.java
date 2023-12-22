@@ -1,185 +1,157 @@
 package grocery;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
 
 public class Main_Panel extends JPanel
 {
-    JPanel[] main_panel = new JPanel[2];
-    JPanel[] menu_panel = new JPanel[5];
+    JPanel[] main_panel = new JPanel[4];
+    JPanel[] menu_panel = new JPanel[7];
     JPanel[] purchase_panel = new JPanel[4];
-    
-    JPanel[] panel = new JPanel[8];
-    JPanel[] sub_panel = new JPanel[3];
-    JPanel[] action_panel = new JPanel[2];
-    JButton[] button = new JButton[10];
-    JLabel[] label = new JLabel[10];
-    JTabbedPane[] tabbedPane = new JTabbedPane[2];
-    JSplitPane[] splitPane = new JSplitPane[3];
-    JTextField[] text = new JTextField[5];
-    JLabel[] action_label = new JLabel[5];
-    JButton[] back_button = new JButton[2];
+    JPanel[] bottom_panel = new JPanel[2];
+
+    JSplitPane[] split_pane = new JSplitPane[2];
+    JTabbedPane[] tabbed_pane = new JTabbedPane[2];
+    JScrollPane[] scroll_pane = new JScrollPane[4];
+
+    JButton[] main_button = new JButton[2];
+    JButton[] menu_button = new JButton[5];
     JButton[] purchase_button = new JButton[3];
+    JButton[] back_button = new JButton[2];
+
+    JLabel[] main_label = new JLabel[3];
+    JLabel[] menu_label = new JLabel[5];
+    JLabel[] purchase_label = new JLabel[3];
+
+    JTextField[] text = new JTextField[5];
+
     JTable product_table, customer_table, sales_table, checkout_table;
-    
+
     Main_Panel(Grocery grocery, Functions function)
     {   
         setLayout(new BorderLayout(0, 0));
-        for(int i = 0;i < 5;i++)
+        for(int i = 0;i < 7;i++)
         {
             menu_panel[i] = new JPanel();
-            if (i < 4)
+            if(i < 5)
             {
-                purchase_panel[0] = new JPanel();
-                if (i < 3)
+                text[i] = new JTextField();
+                if (i < 4)
                 {
-                    System.out.println("Placeholder for 3: " + i);
-                    if (i < 2)
+                    main_panel[i] = new JPanel();
+                    purchase_panel[i] = new JPanel();
+                    scroll_pane[i] = new JScrollPane();
+                    if (i < 3)
                     {
-                        main_panel[i] = new JPanel();
-                        if (i < 1)
+                        System.out.println("Placeholder for 3: " + i);
+                        if (i < 2)
                         {
-                            System.out.println("Placeholder for 1: " + i + "\n");
+                            split_pane[i] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+                            tabbed_pane[i] = new JTabbedPane();
+                            bottom_panel[i] = new JPanel();
+                            if (i < 1)
+                            {
+                                System.out.println("Placeholder for 1: " + i + "\n");
+                            }
                         }
                     }
                 }
             }
         }
-        
-        for(int i = 0;i < 8; i++)
-        {
-            panel[i] = new JPanel();
-            
-            if (i < 5)
-            {
-                text[i] = new JTextField();
-                if(i < 3)
-                {
-                    sub_panel[i] = new JPanel();
-                    if (i < 2)
-                    {
-                        action_panel[i] = new JPanel();
-                        tabbedPane[i] = new JTabbedPane();
-                    }
-                }
-            }
-        }
-        
+
         //Main Panel
-        
         add(main_panel[0],BorderLayout.WEST);
         add(main_panel[1],BorderLayout.EAST);
-        
+
         main_panel[0].setPreferredSize(new Dimension(200,100));
         main_panel[1].setPreferredSize(new Dimension(585,100));
-        
+
         main_panel[0].setLayout(new BorderLayout(0, 0));
         main_panel[1].setLayout(new BorderLayout(0, 0));
-        
-        main_panel[0].add(panel[2]);
-        main_panel[1].add(panel[3]);
-        
-        
+
+        main_panel[0].add(main_panel[2]);
+        main_panel[1].add(main_panel[3]);
+
         //Left
-        panel[2].setBackground(Color.LIGHT_GRAY);
-        panel[2].setLayout(null);
-        panel[2].add(button[0] = new JButton("Menu"));
-        panel[2].add(button[1] = new JButton("Purchase"));
-        panel[2].add(label[0] = new JLabel("Grocery Menu"));
-        panel[2].add(label[1] = new JLabel("Menu"));
-        panel[2].add(label[2] = new JLabel("Purchase"));
-        
-        label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
-        
-        label[1].setFont(new java.awt.Font("Segoe UI", 1, 20));
-        label[2].setFont(new java.awt.Font("Segoe UI", 1, 20));
-        
-        button[0].setBounds(50,100,100,100);
-        button[1].setBounds(50,300,100,100);
-        
-        label[0].setBounds(15,10,200,30);
-        label[1].setBounds(70,70,100,30);
-        label[2].setBounds(57,270,100,30);
-        
-        button[0].addActionListener(new ActionListener()
+        main_panel[2].setBackground(Color.LIGHT_GRAY);
+        main_panel[2].setLayout(null);
+        main_panel[2].add(main_button[0] = new JButton("Menu"));
+        main_panel[2].add(main_button[1] = new JButton("Purchase"));
+        main_panel[2].add(main_label[0] = new JLabel("Grocery Menu"));
+        main_panel[2].add(main_label[1] = new JLabel("Menu"));
+        main_panel[2].add(main_label[2] = new JLabel("Purchase"));
+
+        main_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+
+        main_label[1].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        main_label[2].setFont(new java.awt.Font("Segoe UI", 1, 20));
+
+        main_button[0].setBounds(50,100,100,100);
+        main_button[1].setBounds(50,300,100,100);
+
+        main_label[0].setBounds(15,10,200,30);
+        main_label[1].setBounds(70,70,100,30);
+        main_label[2].setBounds(57,270,100,30);
+
+        main_button[0].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 function.read_product();
-                
-                splitPane[0].setTopComponent(sub_panel[0]);
-                splitPane[0].setBottomComponent(action_panel[1]);
-                splitPane[0].getTopComponent();
-                splitPane[0].getBottomComponent();
-                splitPane[0].setDividerLocation(360);
-                splitPane[0].setDividerSize(0);
-                splitPane[0].setEnabled(false);
-                action_panel[0].add(splitPane[0]);
-                
-                change_panel(panel[4], action_panel[0]);
+                change_panel(menu_panel[0],split_pane());
             }
         });
-        button[1].addActionListener(new ActionListener()
+        main_button[1].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 function.read_product();
-                
-                tabbedPane[1].add("Products",sub_panel[0]);
-                tabbedPane[1].add("Checkout",panel[7]);
-                
+
+                tabbed_pane[0].add("Products",menu_panel[3]);
+                tabbed_pane[0].add("Checkout",purchase_panel[1]);
+
                 clear();
-                change_panel(panel[6], tabbedPane[1]);
+                change_panel(purchase_panel[0], tabbed_pane[0]);
             }
         });
-        
+
         //Right
-        panel[3].setBackground(Color.DARK_GRAY);
-        panel[3].setLayout(new BorderLayout(0, 0));
-        
-        //Form 1.1 panel [2] panel [3]
-        
-        //Left
-        panel[4].setBackground(Color.LIGHT_GRAY);
-        panel[4].setLayout(null);
-        
-        panel[4].add(label[0] = new JLabel("Grocery Menu"));
-        label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
-        label[0].setBounds(15,10,200,30);
-        
-        //Back
-        panel[4].add(back_button[0] = new JButton("Back"));
-        //Add
-        panel[4].add(button[3] = new JButton("Add Product"));
-        //Update
-        panel[4].add(button[4] = new JButton("Update Product"));
-        //Delete
-        panel[4].add(button[5] = new JButton("Delete Product"));
-        //Records (Products, Customer, Sales)
-        panel[4].add(button[6] = new JButton("Records"));
-        
+        main_panel[3].setBackground(Color.DARK_GRAY);
+        main_panel[3].setLayout(new BorderLayout(0, 0));
+
+        //Menu Panel
+
+        //Menu Panel Left
+        menu_panel[0].setBackground(Color.LIGHT_GRAY);
+        menu_panel[0].setLayout(null);
+
+        menu_panel[0].add(menu_label[0] = new JLabel("Grocery Menu"));
+        menu_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        menu_label[0].setBounds(15,10,200,30);
+
+        menu_panel[0].add(back_button[0] = new JButton("Back"));
+        menu_panel[0].add(menu_button[0] = new JButton("Add Product"));
+        menu_panel[0].add(menu_button[1] = new JButton("Update Product"));
+        menu_panel[0].add(menu_button[2] = new JButton("Delete Product"));
+        menu_panel[0].add(menu_button[3] = new JButton("Records"));
+
         back_button[0].setBounds(45,50,110,30);
-        button[3].setBounds(100,100,70,70);
-        button[4].setBounds(100,190,70,70);
-        button[5].setBounds(100,280,70,70);
-        button[6].setBounds(100,370,70,70);
-        
+        menu_button[0].setBounds(100,100,70,70);
+        menu_button[1].setBounds(100,190,70,70);
+        menu_button[2].setBounds(100,280,70,70);
+        menu_button[3].setBounds(100,370,70,70);
+
         back_button[0].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e) {
-                change_panel(panel[2],panel[3]);
+                change_panel(main_panel[2],main_panel[3]);
             }
         });
-        button[3].addActionListener(new ActionListener()
+        menu_button[0].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -203,13 +175,12 @@ public class Main_Panel extends JPanel
                                          Double.parseDouble(text[4].getText()));
                     clear();
                 }
-                
+
                 function.read_product();
-                product_panel();
-                change_panel(null,action_panel[0]);
+                change_panel(null,split_pane());
             }
         });
-        button[4].addActionListener(new ActionListener()
+        menu_button[1].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -234,13 +205,12 @@ public class Main_Panel extends JPanel
                                   Double.parseDouble(text[4].getText()));
                     clear();
                 }
-                
+
                 function.read_product();
-                product_panel();
-                change_panel(null,action_panel[0]);
+                change_panel(null,split_pane());
             }
         });
-        button[5].addActionListener(new ActionListener()
+        menu_button[2].addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -254,44 +224,65 @@ public class Main_Panel extends JPanel
                     function.delete(Integer.parseInt(text[0].getText()));
                     clear();
                 }
-                
+
                 function.read_product();
-                product_panel();
-                change_panel(null,action_panel[0]);
+                change_panel(null,split_pane());
             }
         });
-        
-        action_panel[0].setLayout(new BorderLayout(0,0));
-        splitPane[0] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        
-        action_panel[1].setLayout(null);
+        menu_button[3].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                split_pane[1].setTopComponent(menu_panel[5]);
+                split_pane[1].setBottomComponent(menu_panel[3]);
+                split_pane[1].getTopComponent();
+                split_pane[1].getBottomComponent();
+                split_pane[1].setDividerLocation(200);
+                split_pane[1].setDividerSize(0);
+                split_pane[1].setEnabled(false);
+
+                menu_panel[6].add(split_pane[1]);
+
+                function.read_customer();
+
+                tabbed_pane[0].add("Customers",menu_panel[4]);
+                tabbed_pane[0].add("Sales",menu_panel[6]);
+
+                clear();
+                change_panel(menu_panel[0], tabbed_pane[0]);
+            }
+        });
+
+        //Menu Panel Right
+        menu_panel[1].setLayout(new BorderLayout(0, 0));
+        menu_panel[2].setLayout(new BorderLayout(0, 0));
+        menu_panel[6].setLayout(new BorderLayout(0, 0));
+        bottom_panel[0].setLayout(null);
+
+        bottom_panel[0].add(menu_label[0] = new JLabel("Product ID"));
+        bottom_panel[0].add(menu_label[1] = new JLabel("Description"));
+        bottom_panel[0].add(menu_label[2] = new JLabel("Available Quantity"));
+        bottom_panel[0].add(menu_label[3] = new JLabel("Unit"));
+        bottom_panel[0].add(menu_label[4] = new JLabel("Price"));
+
         for(int i = 0;i < 5;i++)
         {
-            action_panel[1].add(text[i]);
+            int x = 0, width = 0;
+            bottom_panel[0].add(text[i]);
+            switch(i)
+            {
+                case 0: x = 20; width = 65; break;
+                case 1: x = 90; width = 150; break;
+                case 2: x = 245; width = 110; break;
+                case 3: x = 360; width = 50; break;
+                case 4: x = 415; width = 150; break;
+            }
+            menu_label[i].setBounds(x,20,width,20);
+            text[i].setBounds(x, 40, width, 20);
         }
-        
-        action_panel[1].add(action_label[0] = new JLabel("Product ID"));
-        action_panel[1].add(action_label[1] = new JLabel("Description"));
-        action_panel[1].add(action_label[2] = new JLabel("Available Quantity"));
-        action_panel[1].add(action_label[3] = new JLabel("Unit"));
-        action_panel[1].add(action_label[4] = new JLabel("Price"));
-        
-        action_label[0].setBounds(20,20,65,20);
-        action_label[1].setBounds(130,20,100,20);
-        action_label[2].setBounds(245,20,140,20);
-        action_label[3].setBounds(370,20,50,20);
-        action_label[4].setBounds(470,20,100,20);
-        
-        text[0].setBounds(20,40,65,30);
-        text[1].setBounds(90,40,150,30);
-        text[2].setBounds(245,40,110,30);
-        text[3].setBounds(360,40,50,30);
-        text[4].setBounds(415,40,150,30);
-        
-        //Right
-        panel[5].setLayout(new BorderLayout(0, 0));
-        
-        sub_panel[0].setLayout(new BorderLayout());
+
+        menu_panel[3].setLayout(new BorderLayout(0, 0));
         function.table_product_function = new DefaultTableModel()
         {
             {
@@ -309,10 +300,10 @@ public class Main_Panel extends JPanel
         product_table.getColumnModel().getColumn(3).setPreferredWidth(50);
         product_table.getColumnModel().getColumn(4).setPreferredWidth(50);
         product_table.getTableHeader().setReorderingAllowed(false);
-        JScrollPane scrollPane1 = new JScrollPane(product_table);
-        sub_panel[0].add(scrollPane1, BorderLayout.CENTER);
-        
-        sub_panel[1].setLayout(new BorderLayout());
+        scroll_pane[0].setViewportView(product_table);
+        menu_panel[3].add(scroll_pane[0]);
+
+        menu_panel[4].setLayout(new BorderLayout());
         function.table_customer_function = new DefaultTableModel()
         {
             {
@@ -326,10 +317,10 @@ public class Main_Panel extends JPanel
         customer_table.getColumnModel().getColumn(1).setPreferredWidth(150);
         customer_table.getColumnModel().getColumn(2).setPreferredWidth(200);
         customer_table.getTableHeader().setReorderingAllowed(false);
-        JScrollPane scrollPane2 = new JScrollPane(customer_table);
-        sub_panel[1].add(scrollPane2, BorderLayout.CENTER);
-        
-        sub_panel[2].setLayout(new BorderLayout());
+        scroll_pane[1].setViewportView(customer_table);
+        menu_panel[4].add(scroll_pane[1], BorderLayout.CENTER);
+
+        menu_panel[5].setLayout(new BorderLayout());
         function.table_sales_function = new DefaultTableModel()
         {
             {
@@ -338,26 +329,25 @@ public class Main_Panel extends JPanel
                 addColumn("Sales ID");
                 addColumn("Customer ID");
                 addColumn("Name");
-                addColumn("Sales");
-                addRow(new Object[]{"Data 1", "Data 2", "Data 3", "Data 4"});
+                addColumn("Total");
             }
         };
         sales_table = new JTable(function.table_sales_function);
         sales_table.getColumnModel().getColumn(0).setPreferredWidth(50);
         sales_table.getColumnModel().getColumn(1).setPreferredWidth(50);
-        sales_table.getColumnModel().getColumn(2).setPreferredWidth(100);
-        sales_table.getColumnModel().getColumn(3).setPreferredWidth(250);
+        sales_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        sales_table.getColumnModel().getColumn(3).setPreferredWidth(70);
+        sales_table.getColumnModel().getColumn(4).setPreferredWidth(200);
+        sales_table.getColumnModel().getColumn(5).setPreferredWidth(100);
         sales_table.getTableHeader().setReorderingAllowed(false);
-        JScrollPane scrollPane3 = new JScrollPane(sales_table);
-        sub_panel[2].add(scrollPane3, BorderLayout.CENTER);
-        
-        
+        scroll_pane[2].setViewportView(sales_table);
+        menu_panel[5].add(scroll_pane[2], BorderLayout.CENTER);
+
         product_table.setDefaultEditor(Object.class, null);
         customer_table.setDefaultEditor(Object.class, null);
         sales_table.setDefaultEditor(Object.class, null);
-        splitPane[1] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
- 
-        product_table.addMouseListener(new MouseAdapter() {
+        product_table.addMouseListener(new MouseAdapter()
+        {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = product_table.rowAtPoint(e.getPoint());
@@ -371,63 +361,117 @@ public class Main_Panel extends JPanel
                 }
             }
         });
-        
-        button[6].addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                splitPane[1].setTopComponent(sub_panel[2]);
-                splitPane[1].setBottomComponent(sub_panel[0]);
-                splitPane[1].getTopComponent();
-                splitPane[1].getBottomComponent();
-                splitPane[1].setDividerLocation(200);
-                splitPane[1].setDividerSize(0);
-                splitPane[1].setEnabled(false);
-                
-                panel[5].add(splitPane[1]);
-                
-                function.read_customer();
-                
-                tabbedPane[0].add("Customers",sub_panel[1]);
-                tabbedPane[0].add("Sales",panel[5]);
-                
-                clear();
-                change_panel(null, tabbedPane[0]);
-            }
-        });
-        
-        //Form 1.2 panel[4] panel [5]
-        
-        //Left
-        panel[6].setLayout(null);
-        panel[6].setBackground(Color.LIGHT_GRAY);
-        panel[6].add(purchase_button[0] = new JButton("Add"));
-        panel[6].add(purchase_button[1] = new JButton("Remove"));
-        panel[6].add(purchase_button[2] = new JButton("Checkout"));
-        panel[6].add(back_button[1] = new JButton("Back"));
-        panel[6].add(label[0] = new JLabel("Grocery Menu"));
-        label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
-        label[0].setBounds(15,10,200,30);
-        
+
+        //Purchase Panel
+
+        //Purchase Panel Left
+        purchase_panel[0].setBackground(Color.LIGHT_GRAY);
+        purchase_panel[0].setLayout(null);
+
+        purchase_panel[0].add(back_button[1] = new JButton("Back"));
+        purchase_panel[0].add(purchase_button[0] = new JButton("Add"));
+        purchase_panel[0].add(purchase_button[1] = new JButton("Remove"));
+        purchase_panel[0].add(purchase_button[2] = new JButton("Checkout"));
+        purchase_panel[0].add(purchase_label[0] = new JLabel("Grocery Menu"));
+        purchase_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        purchase_label[0].setBounds(15,10,200,30);
+
         back_button[1].setBounds(45,50,110,30);
         purchase_button[0].setBounds(100,100,70,70);
         purchase_button[1].setBounds(100,190,70,70);
         purchase_button[2].setBounds(100,280,70,70);
-        
+
         back_button[1].addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                change_panel(panel[2],panel[3]);
+            public void actionPerformed(ActionEvent e)
+            {
+                change_panel(main_panel[2],main_panel[3]);
             }
         });
+        purchase_button[0].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int selectedRow = product_table.getSelectedRow();
+                if (selectedRow >= 0)
+                {    
+                    String[] rowData = new String[5];
+                    for (int i = 0; i < 5; i++)
+                    {
+                        if (i == 2)
+                        {
+                            boolean validInput = false;
+                            String quantity = null;
+
+                            while (!validInput)
+                            {
+                                String input = JOptionPane.showInputDialog("How Many?");
+
+                                try
+                                {
+                                    int enteredQuantity = Integer.parseInt(input);
+
+                                    if (enteredQuantity <= Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, i))))
+                                    {
+                                        quantity = input;
+                                        validInput = true;
+                                    }
+                                    else
+                                    {
+                                        JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+                                catch (NumberFormatException f)
+                                {
+                                    JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+
+                            rowData[i] = quantity;
+                        } else {
+                            rowData[i] = String.valueOf(product_table.getValueAt(selectedRow, i));
+                        }
+                    }
+                    ((DefaultTableModel) checkout_table.getModel()).addRow(rowData);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Please select a row in from the Products List", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        purchase_button[1].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                int selectedRow = checkout_table.getSelectedRow();
+                if (selectedRow >= 0)
+                {    
+                    ((DefaultTableModel) checkout_table.getModel()).removeRow(selectedRow);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null, "Please select a row in from your checkout table", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        purchase_button[2].addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Checkout");
+            }
+        });
+
+        //Purchase Panel Right
+        purchase_panel[1].setBackground(Color.DARK_GRAY);
+        purchase_panel[1].setLayout(new BorderLayout(0,0));
         
-        //Right
-        panel[7].setBackground(Color.DARK_GRAY);
-        panel[7].setLayout(new BorderLayout(0,0));
-        
-        checkout_table = new JTable(new DefaultTableModel()
+        function.table_checkout_function = new DefaultTableModel()
         {
             {
                 addColumn("Product ID");
@@ -436,20 +480,27 @@ public class Main_Panel extends JPanel
                 addColumn("Unit");
                 addColumn("Price");
             }
-        });
-        
+            
+            @Override
+            public boolean isCellEditable(int row, int column)
+            {
+                return column == 2;
+            }
+        };
+        checkout_table = new JTable(function.table_checkout_function);
         checkout_table.getColumnModel().getColumn(0).setPreferredWidth(50);
         checkout_table.getColumnModel().getColumn(1).setPreferredWidth(250);
         checkout_table.getColumnModel().getColumn(2).setPreferredWidth(50);
         checkout_table.getColumnModel().getColumn(3).setPreferredWidth(50);
         checkout_table.getColumnModel().getColumn(4).setPreferredWidth(50);
         checkout_table.getTableHeader().setReorderingAllowed(false);
-        JScrollPane scrollPane4 = new JScrollPane(checkout_table);
-        panel[7].add(scrollPane4, BorderLayout.CENTER);
+        checkout_table.setDefaultEditor(Object.class, null);
         
+        scroll_pane[3].setViewportView(checkout_table);
+        purchase_panel[1].add(scroll_pane[3], BorderLayout.CENTER);
         
     }
-    
+
     private boolean productExists(String productName)
     {
         for (int row = 0; row < product_table.getRowCount(); row++)
@@ -462,19 +513,21 @@ public class Main_Panel extends JPanel
         }
         return false;
     }
-    
-    public void product_panel()
+
+    public JPanel split_pane()
     {
-        splitPane[0].setTopComponent(sub_panel[0]);
-        splitPane[0].setBottomComponent(action_panel[1]);
-        splitPane[0].getTopComponent();
-        splitPane[0].getBottomComponent();
-        splitPane[0].setDividerLocation(360);
-        splitPane[0].setDividerSize(0);
-        splitPane[0].setEnabled(false);
-        action_panel[0].add(splitPane[0]);
+        split_pane[0].setTopComponent(menu_panel[3]);
+        split_pane[0].setBottomComponent(bottom_panel[0]);
+        split_pane[0].getTopComponent();
+        split_pane[0].getBottomComponent();
+        split_pane[0].setDividerLocation(360);
+        split_pane[0].setDividerSize(0);
+        split_pane[0].setEnabled(false);
+        menu_panel[2].add(split_pane[0]);
+
+        return menu_panel[2];
     }
-    
+
     public void change_panel(JPanel panel_1, JPanel panel_2)
     {
         if (panel_1 != null)
@@ -489,7 +542,7 @@ public class Main_Panel extends JPanel
         main_panel[1].revalidate();
         main_panel[1].repaint();
     }
-    
+
     public void change_panel(JPanel panel_1, JTabbedPane panel_2)
     {
         if (panel_1 != null)
@@ -504,22 +557,7 @@ public class Main_Panel extends JPanel
         main_panel[1].revalidate();
         main_panel[1].repaint();
     }
-    
-    public void change_panel(JPanel panel_1, JSplitPane panel_2)
-    {
-        if (panel_1 != null)
-        {
-            main_panel[0].removeAll();
-            main_panel[0].add(panel_1);
-            main_panel[0].revalidate();
-            main_panel[0].repaint();
-        }
-        main_panel[1].removeAll();
-        main_panel[1].add(panel_2);
-        main_panel[1].revalidate();
-        main_panel[1].repaint();
-    }
-    
+
     public void clear()
     {
         for(int i = 0;i < 5;i++)
