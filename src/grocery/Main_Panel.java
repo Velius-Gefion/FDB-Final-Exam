@@ -94,8 +94,7 @@ public class Main_Panel extends JPanel
         main_label[1].setBounds(70,70,100,30);
         main_label[2].setBounds(57,270,100,30);
 
-        main_button[0].addActionListener(new ActionListener()
-        {
+        main_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -103,8 +102,7 @@ public class Main_Panel extends JPanel
                 change_panel(menu_panel[0],split_pane());
             }
         });
-        main_button[1].addActionListener(new ActionListener()
-        {
+        main_button[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -144,15 +142,13 @@ public class Main_Panel extends JPanel
         menu_button[2].setBounds(100,280,70,70);
         menu_button[3].setBounds(100,370,70,70);
 
-        back_button[0].addActionListener(new ActionListener()
-        {
+        back_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 change_panel(main_panel[2],main_panel[3]);
             }
         });
-        menu_button[0].addActionListener(new ActionListener()
-        {
+        menu_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {               
@@ -169,7 +165,7 @@ public class Main_Panel extends JPanel
                 }
                 else
                 {
-                    function.create(text[1].getText(),
+                    function.create_product(text[1].getText(),
                                 Integer.parseInt(text[2].getText()),
                                           text[3].getText(),
                                          Double.parseDouble(text[4].getText()));
@@ -180,8 +176,7 @@ public class Main_Panel extends JPanel
                 change_panel(null,split_pane());
             }
         });
-        menu_button[1].addActionListener(new ActionListener()
-        {
+        menu_button[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {   
@@ -210,8 +205,7 @@ public class Main_Panel extends JPanel
                 change_panel(null,split_pane());
             }
         });
-        menu_button[2].addActionListener(new ActionListener()
-        {
+        menu_button[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -229,8 +223,7 @@ public class Main_Panel extends JPanel
                 change_panel(null,split_pane());
             }
         });
-        menu_button[3].addActionListener(new ActionListener()
-        {
+        menu_button[3].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -379,8 +372,7 @@ public class Main_Panel extends JPanel
         purchase_button[1].setBounds(100,190,70,70);
         purchase_button[2].setBounds(100,280,70,70);
 
-        back_button[1].addActionListener(new ActionListener()
-        {
+        back_button[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
@@ -496,10 +488,44 @@ public class Main_Panel extends JPanel
                 }
             }
         });
-        purchase_button[2].addActionListener(new ActionListener(){
+        purchase_button[2].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                String name;
+                String email;
+                
+                while (true)
+                {
+                    name = JOptionPane.showInputDialog("Please enter your name:");
+                    
+                    if(name == null)
+                    {
+                        break;
+                    }
+                    else if(name.isEmpty())
+                    {
+                        JOptionPane.showMessageDialog(null, "Please fill out the window", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    
+                    while (true)
+                    {
+                        email = JOptionPane.showInputDialog("Please enter your email address:");
+                        if(email == null || !isValidEmailFormat(email))
+                        {
+                            JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    
+                    if(email != null)
+                    {
+                        break;
+                    }
+                }
                 System.out.println("Checkout");
             }
         });
@@ -538,6 +564,12 @@ public class Main_Panel extends JPanel
         
     }
 
+    public static boolean isValidEmailFormat(String email)
+    {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        return email.matches(emailRegex);
+    }
+    
     private boolean productExists(String productName)
     {
         for (int row = 0; row < product_table.getRowCount(); row++)

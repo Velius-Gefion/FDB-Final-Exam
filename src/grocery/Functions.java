@@ -50,7 +50,7 @@ public class Functions
         }
     }
     
-    public void create(String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
+    public void create_product(String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO products (PRODUCT_DESCRIPTION, PRODUCT_AVAILABLE_QUANTITY, PRODUCT_UNIT, PRODUCT_PRICE) VALUES (?, ?, ?, ?)");
@@ -58,6 +58,18 @@ public class Functions
             stmt.setInt(2, productAvailableQuantity);
             stmt.setString(3, productUnit);
             stmt.setDouble(4, productPrice);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void create_customer(String customerName, String customerEmail)
+    {
+        try {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO customer (CUSTOMER_NAME, CUSTOMER_EMAIL) VALUES (?, ?)");
+            stmt.setString(1, customerName);
+            stmt.setString(2, customerEmail);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
