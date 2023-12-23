@@ -304,8 +304,7 @@ public class Main_Panel extends JPanel
         menu_panel[3].add(scroll_pane[0]);
 
         menu_panel[4].setLayout(new BorderLayout());
-        function.table_customer_function = new DefaultTableModel()
-        {
+        function.table_customer_function = new DefaultTableModel() {
             {
                 addColumn("Customer ID");
                 addColumn("Name");
@@ -321,8 +320,7 @@ public class Main_Panel extends JPanel
         menu_panel[4].add(scroll_pane[1], BorderLayout.CENTER);
 
         menu_panel[5].setLayout(new BorderLayout());
-        function.table_sales_function = new DefaultTableModel()
-        {
+        function.table_sales_function = new DefaultTableModel() {
             {
                 addColumn("Date");
                 addColumn("Time");                
@@ -389,68 +387,108 @@ public class Main_Panel extends JPanel
                 change_panel(main_panel[2],main_panel[3]);
             }
         });
-        purchase_button[0].addActionListener(new ActionListener()
-        {
+        purchase_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 int selectedRow = product_table.getSelectedRow();
                 if (selectedRow >= 0)
-                {    
+                {
                     String[] rowData = new String[5];
-                    for (int i = 0; i < 5; i++)
+                    String quantity = null;
+
+                    while (true)
                     {
-                        if (i == 2)
+                        String input = JOptionPane.showInputDialog("How Many?");
+                        if (input != null)
                         {
-                            boolean validInput = false;
-                            String quantity = null;
-
-                            while (!validInput)
+                            try
                             {
-                                String input = JOptionPane.showInputDialog("How Many?");
+                                int enteredQuantity = Integer.parseInt(input);
 
-                                try
+                                if (enteredQuantity <= Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, 2))))
                                 {
-                                    int enteredQuantity = Integer.parseInt(input);
-
-                                    if (enteredQuantity <= Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, i))))
-                                    {
-                                        quantity = input;
-                                        validInput = true;
-                                    }
-                                    else
-                                    {
-                                        JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
-                                    }
+                                    quantity = input;
+                                    break;
                                 }
-                                catch (NumberFormatException f)
+                                else
                                 {
                                     JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
                                 }
                             }
-
-                            rowData[i] = quantity;
-                        } else {
-                            rowData[i] = String.valueOf(product_table.getValueAt(selectedRow, i));
+                            catch (NumberFormatException ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
-                    ((DefaultTableModel) checkout_table.getModel()).addRow(rowData);
+                    
+                    if(quantity != null)
+                    {
+                        for (int i = 0; i < 5; i++)
+                        {
+                            rowData[i] = (i == 2) ? quantity : String.valueOf(product_table.getValueAt(selectedRow, i));
+                        }
+
+                        boolean found = false;
+                        for (int row = 0; row < checkout_table.getRowCount(); row++)
+                        {
+                            int tableProductId = Integer.parseInt(String.valueOf(checkout_table.getValueAt(row, 0)));
+                            if (tableProductId == Integer.parseInt(rowData[0]))
+                            {
+                                int currentQuantity = Integer.parseInt(String.valueOf(checkout_table.getValueAt(row, 2)));
+                                checkout_table.setValueAt(currentQuantity + Integer.parseInt(quantity), row, 2);
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            int currentQuantity = Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, 2)));
+                            product_table.setValueAt(currentQuantity - Integer.parseInt(quantity), selectedRow, 2);
+                            ((DefaultTableModel) checkout_table.getModel()).addRow(rowData);
+                        }
+                    }
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "Please select a row in from the Products List", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Please select a row from the Products List", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        purchase_button[1].addActionListener(new ActionListener()
-        {
+        purchase_button[1].addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 int selectedRow = checkout_table.getSelectedRow();
+                
                 if (selectedRow >= 0)
                 {    
-                    ((DefaultTableModel) checkout_table.getModel()).removeRow(selectedRow);
+                    String[] rowData = new String[5];
+                    
+                    for (int i = 0; i < 5; i++)
+                    {
+                        rowData[i] = String.valueOf(checkout_table.getValueAt(selectedRow, i));
+                    }
+                    
+                    int tableProductId = Integer.parseInt(rowData[0]);
+                    
+                    for (int row = 0; row < product_table.getRowCount(); row++)
+                    {
+                        int currentProductId = Integer.parseInt(String.valueOf(product_table.getValueAt(row, 0)));
+                        if (currentProductId == tableProductId)
+                        {
+                            int currentQuantity = Integer.parseInt(String.valueOf(product_table.getValueAt(row, 2)));
+                            product_table.setValueAt(currentQuantity + Integer.parseInt(rowData[2]), row, 2);
+                            ((DefaultTableModel) checkout_table.getModel()).removeRow(selectedRow);
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -458,8 +496,7 @@ public class Main_Panel extends JPanel
                 }
             }
         });
-        purchase_button[2].addActionListener(new ActionListener()
-        {
+        purchase_button[2].addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e)
             {
