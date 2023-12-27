@@ -1,11 +1,15 @@
 package grocery;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.mail.MessagingException;
 import javax.swing.*;
 import javax.swing.table.*;
 
 public class Main_Panel extends JPanel
-{
+{           
     JPanel[] main_panel = new JPanel[4];
     JPanel[] menu_panel = new JPanel[7];
     JPanel[] purchase_panel = new JPanel[4];
@@ -492,41 +496,73 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                String name;
-                String email;
-                
-                while (true)
-                {
-                    name = JOptionPane.showInputDialog("Please enter your name:");
-                    
-                    if(name == null)
-                    {
-                        break;
-                    }
-                    else if(name.isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(null, "Please fill out the window", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                try {
+                    String name = "";
+                    String email = "";
                     
                     while (true)
                     {
-                        email = JOptionPane.showInputDialog("Please enter your email address:");
-                        if(email == null || !isValidEmailFormat(email))
+                        name = JOptionPane.showInputDialog("Please enter your name:");
+                        if(name == null)
                         {
-                            JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
+                            break;
                         }
-                        else
+                        else if(name.isEmpty())
+                        {
+                            JOptionPane.showMessageDialog(null, "Please fill out the window", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                        while (true)
+                        {
+                            email = JOptionPane.showInputDialog("Please enter your email address:");
+                            if(email == null || !isValidEmailFormat(email))
+                            {
+                                JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        
+                        if(email != null)
                         {
                             break;
                         }
                     }
                     
-                    if(email != null)
+                    String [] customerRow = new String [3];
+                    boolean found = false;
+                    function.read_customer();
+                    for(int i = 0;i < customer_table.getRowCount();i++)
                     {
-                        break;
+                        for(int j = 0;j < 3;j++)
+                        {
+                            customerRow[j] = String.valueOf(customer_table.getValueAt(i, j));
+                        }
+                        
+                        if(customerRow[2].matches(email))
+                        {
+                            found = true;
+                            break;
+                        }
                     }
+                    
+                    if(!found)
+                    {
+                        System.out.println("Email saved into the database");
+                        function.create_customer(name, email);
+                    }
+                    
+                    function.setUpServerProperties();
+                    function.draftEmail(name, email);
+                    function.sendEmail();
                 }
-                System.out.println("Checkout");
+                catch (MessagingException | IOException ex)
+                {
+                    Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
             }
         });
 

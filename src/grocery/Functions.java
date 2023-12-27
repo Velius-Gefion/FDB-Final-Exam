@@ -1,5 +1,5 @@
 package grocery;
-
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,6 +8,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,7 +26,9 @@ public class Functions
     Grocery grocery;
     Connection conn;
     DefaultTableModel table_product_function, table_customer_function, table_sales_function, table_checkout_function;
-    
+    Session newSession = null;
+    MimeMessage mimeMessage = null;
+        
     Functions(Grocery grocery)
     {
         this.grocery = grocery;
@@ -188,6 +200,61 @@ public class Functions
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void setUpServerProperties()
+    {
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.port","587");
+        properties.put("mail.smtp.auth","true");
+        properties.put("mail.smtp.starttls.enable","true");
+        newSession = Session.getDefaultInstance(properties,null);
+    }
+
+    public void sendEmail() throws MessagingException
+    {
+        String fromUser = "veliusgefion@gmail.com";
+        String fromUserPassword = "sfnc zvda ecxg nnvs";
+        String emailHost = "smtp.gmail.com";
+        try (Transport transport = newSession.getTransport("smtp"))
+        {
+            transport.connect(emailHost, fromUser, fromUserPassword);
+            transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+        }
+        
+        JOptionPane.showMessageDialog(null, "Email sent successfully.");
+    }
+    
+        
+    protected MimeMessage draftEmail(String name, String email) throws AddressException, MessagingException, IOException
+    {
+        String emailSubject = "Sales Order";
+        String emailBody = "Hello " + name
+                + "\n"
+                + ""
+                + ""
+                + ""
+                + "Thank you for purchasing with us!";
+        mimeMessage = new MimeMessage(newSession);
+        
+        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+        mimeMessage.setSubject(emailSubject);
+	   
+        // CREATE MIMEMESSAGE 
+        // CREATE MESSAGE BODY PARTS 
+        // CREATE MESSAGE MULTIPART 
+        // ADD MESSAGE BODY PARTS ----> MULTIPART 
+        // FINALLY ADD MULTIPART TO MESSAGECONTENT i.e. mimeMessage object 
+
+
+        MimeBodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setContent(emailBody,"html/text");
+        MimeMultipart multiPart = new MimeMultipart();
+        multiPart.addBodyPart(bodyPart);
+        mimeMessage.setContent(multiPart);
+        return mimeMessage;
+    }
+    
+    
     /*
     public void purchase()
     {
@@ -199,6 +266,8 @@ public class Functions
         totalAmount = 0.0;
         // Compute change and display total amount and change
     }
+    
+    
     
     public void report() throws FileNotFoundException, IOException
     {
