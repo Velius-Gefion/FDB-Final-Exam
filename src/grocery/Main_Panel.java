@@ -46,19 +46,11 @@ public class Main_Panel extends JPanel
                     main_panel[i] = new JPanel();
                     purchase_panel[i] = new JPanel();
                     scroll_pane[i] = new JScrollPane();
-                    if (i < 3)
+                    if (i < 2)
                     {
-                        System.out.println("Placeholder for 3: " + i);
-                        if (i < 2)
-                        {
-                            split_pane[i] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-                            tabbed_pane[i] = new JTabbedPane();
-                            bottom_panel[i] = new JPanel();
-                            if (i < 1)
-                            {
-                                System.out.println("Placeholder for 1: " + i + "\n");
-                            }
-                        }
+                        split_pane[i] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+                        tabbed_pane[i] = new JTabbedPane();
+                        bottom_panel[i] = new JPanel();
                     }
                 }
             }
@@ -496,76 +488,10 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                try {
-                    String name = "";
-                    String email = "";
-                    
-                    while (true)
-                    {
-                        name = JOptionPane.showInputDialog("Please enter your name:");
-                        if(name == null)
-                        {
-                            break;
-                        }
-                        else if(name.isEmpty())
-                        {
-                            JOptionPane.showMessageDialog(null, "Please fill out the window", "Error", JOptionPane.ERROR_MESSAGE);
-                        }
-                        
-                        while (true)
-                        {
-                            email = JOptionPane.showInputDialog("Please enter your email address:");
-                            if(email == null || !isValidEmailFormat(email))
-                            {
-                                JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                        
-                        if(email != null)
-                        {
-                            break;
-                        }
-                    }
-                    
-                    String [] customerRow = new String [3];
-                    boolean found = false;
-                    function.read_customer();
-                    for(int i = 0;i < customer_table.getRowCount();i++)
-                    {
-                        for(int j = 0;j < 3;j++)
-                        {
-                            customerRow[j] = String.valueOf(customer_table.getValueAt(i, j));
-                        }
-                        
-                        if(customerRow[2].matches(email))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    
-                    if(!found)
-                    {
-                        System.out.println("Email saved into the database");
-                        function.create_customer(name, email);
-                    }
-                    
-                    function.setUpServerProperties();
-                    function.draftEmail(name, email);
-                    function.sendEmail();
-                }
-                catch (MessagingException | IOException ex)
-                {
-                    Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
+                function.purchase(checkout_table,customer_table);
             }
         });
-
+        
         //Purchase Panel Right
         purchase_panel[1].setBackground(Color.DARK_GRAY);
         purchase_panel[1].setLayout(new BorderLayout(0,0));
@@ -597,7 +523,6 @@ public class Main_Panel extends JPanel
         
         scroll_pane[3].setViewportView(checkout_table);
         purchase_panel[1].add(scroll_pane[3], BorderLayout.CENTER);
-        
     }
 
     public static boolean isValidEmailFormat(String email)
