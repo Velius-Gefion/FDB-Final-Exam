@@ -343,8 +343,8 @@ public class Functions
 
     public void sendEmail() throws MessagingException
     {
-        String fromUser = "veliusgefion@gmail.com";
-        String fromUserPassword = "sfnc zvda ecxg nnvs";
+        String fromUser = "dummyemail@gmail.com"; //Paki butang sa inyo email diri
+        String fromUserPassword = "dummypassword"; //ug password sa inyong email
         String emailHost = "smtp.gmail.com";
         try (Transport transport = newSession.getTransport("smtp"))
         {
