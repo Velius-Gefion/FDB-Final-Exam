@@ -9,6 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Properties;
@@ -31,14 +34,20 @@ public class Functions
 {
     Grocery grocery;
     Connection conn;
-    DefaultTableModel table_product_function, table_customer_function, table_sales_function, table_checkout_function;
+    DefaultTableModel table_product_function, table_customer_function, table_sales_function, table_checkout_function, table_items_sold_function;
     Session newSession = null;
     MimeMessage mimeMessage = null;
-        
+    Main_Panel mainPanel;
+    
     Functions(Grocery grocery)
     {
         this.grocery = grocery;
         
+    }
+    
+    public void main_Panel(Main_Panel mainPanel)
+    {
+        this.mainPanel = mainPanel;
     }
     
     public void connect()
@@ -91,6 +100,89 @@ public class Functions
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void create_sales(int customerID, String name, double total)
+    {
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO sales (DATE, TIME, CUSTOMER_ID, CUSTOMER_NAME, TOTAL_SALES) VALUES ( ?, ?, ?, ?, ?)");
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+            String dateString = dateFormat.format(currentDate);
+            String timeString = timeFormat.format(currentDate);
+            
+            preparedStatement.setString(1, dateString);
+            preparedStatement.setString(2, timeString);
+            preparedStatement.setInt(3, customerID);
+            preparedStatement.setString(4, name);
+            preparedStatement.setDouble(5,total);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Functions.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void create_items_sold(int[] productID, int[] soldQuantity)
+    {
+        read_sales();
+        
+        boolean found = false;
+        int similar = 0;
+        String [][] salesData = new String [table_sales_function.getRowCount()][table_sales_function.getColumnCount()];
+        
+        for(int i = 0;i < table_sales_function.getRowCount();i++)
+        {
+            for(int j = 0;j < table_sales_function.getColumnCount();j++)
+            {
+                salesData[i][j] = String.valueOf(table_sales_function.getValueAt(i, j));
+            }
+            
+            read_items_sold(Integer.parseInt(salesData[i][2]));
+            String [][] itemsData = new String [table_items_sold_function.getRowCount()][table_items_sold_function.getColumnCount()];
+            
+            for(int k = 0;k < table_items_sold_function.getRowCount();k++)
+            {
+                for(int l = 0;l < table_items_sold_function.getColumnCount();l++)
+                {
+                    itemsData[k][l] = String.valueOf(table_items_sold_function.getValueAt(k, l));
+                }
+                
+                if(k > 0 && itemsData[k][2].equals(itemsData[k - 1][2]))
+                {
+                    similar++;
+                }
+                else if(itemsData[k][2].equals(itemsData[k - 1][2]) == false)
+                {
+                    similar = 0;
+                }
+            }
+            
+            if (similar == 0)
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        if(!found)
+        {
+            try {
+                PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO items_sold (SALES_ID, PRODUCT_ID, SOLD_QUANTITY) VALUES (?, ?, ?)");
+
+                for(int i = 0;i < productID.length;i++)
+                {
+                    preparedStatement.setInt(1, Integer.parseInt(salesData[0][2]));
+                    preparedStatement.setInt(2, productID[i]);
+                    preparedStatement.setInt(3, soldQuantity[i]);
+                }
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(Functions.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -156,7 +248,7 @@ public class Functions
     {
         try {
             try (Statement statement = conn.createStatement()) {
-                String query = "SELECT * FROM customer";
+                String query = "SELECT * FROM sales";
                 try (ResultSet resultSet = statement.executeQuery(query)) {
                     java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
                     int columnCount = metaData.getColumnCount();
@@ -181,7 +273,40 @@ public class Functions
         }
     }
     
-    public void update(int productId, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
+    public void read_items_sold(int salesID)
+    {
+        try {
+            try (Statement statement = conn.createStatement()) {
+                String query = "SELECT * FROM items_sold";
+                try (ResultSet resultSet = statement.executeQuery(query)) {
+                    java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+                    int rowCount = table_items_sold_function.getRowCount();
+                    
+                    for(int i = rowCount - 1; i >= 0; i--)
+                    {
+                        table_items_sold_function.removeRow(i);
+                    }
+                    
+                    while (resultSet.next()) {
+                        Object[] row = new Object[columnCount];
+                        for (int i = 1; i <= columnCount; i++) {
+                            row[i - 1] = resultSet.getObject(i);
+                        }
+                        
+                        if(salesID == Integer.parseInt(String.valueOf(row[2])))
+                        {
+                            table_items_sold_function.addRow(row);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
+        }
+    }
+    
+    public void update(int productID, String productDescription, int productAvailableQuantity, String productUnit, double productPrice)
     {
         try {
             PreparedStatement stmt = conn.prepareStatement("UPDATE products SET PRODUCT_DESCRIPTION = ?, PRODUCT_AVAILABLE_QUANTITY = ?, PRODUCT_UNIT = ?, PRODUCT_PRICE = ? WHERE PRODUCT_ID = ?");
@@ -189,18 +314,18 @@ public class Functions
             stmt.setInt(2, productAvailableQuantity);
             stmt.setString(3, productUnit);
             stmt.setDouble(4, productPrice);
-            stmt.setInt(5, productId);
+            stmt.setInt(5, productID);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void delete(int productId)
+    public void delete(int productID)
     {
         try {
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM products WHERE PRODUCT_ID = ?");
-            stmt.setInt(1, productId);
+            stmt.setInt(1, productID);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
@@ -214,7 +339,6 @@ public class Functions
         properties.put("mail.smtp.auth","true");
         properties.put("mail.smtp.starttls.enable","true");
         newSession = Session.getDefaultInstance(properties,null);
-        
     }
 
     public void sendEmail() throws MessagingException
@@ -227,7 +351,6 @@ public class Functions
             transport.connect(emailHost, fromUser, fromUserPassword);
             transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
         }
-        
         JOptionPane.showOptionDialog(null, "Email sent successfully.", "",
                 JOptionPane.DEFAULT_OPTION,
                 JOptionPane.INFORMATION_MESSAGE,
@@ -236,9 +359,9 @@ public class Functions
                 null);
     }
      
-    protected MimeMessage draftEmail(String name, String email, String[][] order) throws AddressException, MessagingException, IOException
+    protected MimeMessage draftEmail(int Customer_ID,String name, String email, String[][] order) throws AddressException, MessagingException, IOException
     {
-        String emailSubject = "Sales Order";
+        String emailSubject = "Order #";
         String orderList = "";
         double total = 0;
         for (String[] order1 : order)
@@ -294,10 +417,12 @@ public class Functions
         multiPart.addBodyPart(bodyPart);
         mimeMessage.setContent(multiPart);
         
+        create_sales(Customer_ID, name, total);
+        
         JOptionPane firstOptionPane = new JOptionPane("This might take a while",
                 JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
         
-        JDialog dialog = firstOptionPane.createDialog("Automatic Close Dialog");
+        JDialog dialog = firstOptionPane.createDialog("Processing...");
         dialog.setDefaultCloseOperation(javax.swing.JDialog.DO_NOTHING_ON_CLOSE);
         Timer timer;
         timer = new Timer(2000, new ActionListener() {
@@ -314,12 +439,12 @@ public class Functions
         return mimeMessage;
     }
     
-    public void purchase(JTable checkout_table,JTable customer_table)
+    public void purchase(JTable product_table,JTable checkout_table,JTable customer_table)
     {
         try {
             String name = "";
             String email = "";
-            String[][] order = new String[checkout_table.getRowCount()][5];
+            String[][] order = new String[checkout_table.getRowCount()][checkout_table.getColumnCount()];
 
             while (true) {
                 name = JOptionPane.showInputDialog("Please enter your name:");
@@ -352,19 +477,21 @@ public class Functions
             }
 
             String [] customerRow = new String [3];
+            int customerID = 0;
             boolean found = false;
             read_customer();
             if(!("".equals(name)) && !("".equals(email)))
             {
                 for(int i = 0;i < customer_table.getRowCount();i++)
                 {
-                    for(int j = 0;j < 3;j++)
+                    for(int j = 0;j < customer_table.getColumnCount();j++)
                     {
                         customerRow[j] = String.valueOf(customer_table.getValueAt(i, j));
                     }
 
                     if(customerRow[2].matches(email))
                     {
+                        customerID = Integer.parseInt(customerRow[0]);
                         found = true;
                     }
                 }
@@ -373,20 +500,78 @@ public class Functions
                 {
                     System.out.println("Email saved into the database");
                     create_customer(name, email);
+                    customerID = Integer.parseInt(customerRow[0]) + 1;
                 }
 
+                int[] productID_checkout = new int[checkout_table.getRowCount()];
+                int[] soldQuantity = new int[checkout_table.getRowCount()];
                 for(int i = 0;i < checkout_table.getRowCount();i++)
                 {
-                    System.out.println(checkout_table.getRowCount());
-                    for(int j = 0;j < 5;j++)
+                    for(int j = 0;j < checkout_table.getColumnCount();j++)
                     {
                         order[i][j] = String.valueOf(checkout_table.getValueAt(i, j));
+                        if(j == 0)
+                        {
+                            productID_checkout[i] = Integer.parseInt(String.valueOf(checkout_table.getValueAt(i, j)));
+                        }
+                        else if(j == 2)
+                        {
+                            soldQuantity[i] = Integer.parseInt(String.valueOf(checkout_table.getValueAt(i, j)));
+                        }
                     }
                 }
 
+                mainPanel.back_button[1].setEnabled(false);
+                mainPanel.purchase_button[0].setEnabled(false);
+                mainPanel.purchase_button[1].setEnabled(false);
+                mainPanel.purchase_button[2].setEnabled(false);
+                
                 setUpServerProperties();
-                draftEmail(name, email, order);
+                draftEmail(customerID, name, email, order);
+                create_items_sold(productID_checkout, soldQuantity);
                 sendEmail();
+                
+                mainPanel.back_button[1].setEnabled(true);
+                mainPanel.purchase_button[0].setEnabled(true);
+                mainPanel.purchase_button[1].setEnabled(true);
+                mainPanel.purchase_button[2].setEnabled(true);
+                
+                Object[][] orderData = new Object[order.length][order[0].length];
+
+                for (int i = 0; i < order.length; i++) {
+                    for (int j = 0; j < order[0].length; j++) {
+                        orderData[i][j] = order[i][j];
+                    }
+                }
+                
+                Arrays.sort(orderData, (row1, row2) -> Integer.compare(
+                                                       Integer.parseInt(String.valueOf(row1[0])),
+                                                       Integer.parseInt(String.valueOf(row2[0]))));
+
+                
+                for(int i = 0; i < product_table.getRowCount();i++)
+                {
+                    String productID = String.valueOf(product_table.getValueAt(i, 0));
+                    for(int j = 0;j < order.length;j++)
+                    {
+                        if(productID.matches(String.valueOf(orderData[j][0])))
+                        {
+                            update(Integer.parseInt(String.valueOf(orderData[j][0])),
+                            String.valueOf(orderData[j][1]),
+                        Integer.parseInt(String.valueOf(orderData[j][2])),
+                                  String.valueOf(orderData[j][3]),
+                                 Double.parseDouble(String.valueOf(orderData[j][4])));
+                        }
+                    }
+                }
+                
+                if(checkout_table.getRowCount() != 0)
+                {
+                    for(int i = checkout_table.getRowCount() - 1; i >= 0;i--)
+                    {
+                        ((DefaultTableModel) checkout_table.getModel()).removeRow(i);
+                    }
+                }
             }
         }
         catch (MessagingException | IOException ex)
@@ -418,23 +603,6 @@ public class Functions
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }*
-    }
-    
-    public void sendEmail()
-    {
-        try {
-            String to = customerEmail;
-            String subject = "List of products available";
-            String body = "Here is a list of products available:\n";
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM products");
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                body += rs.getString("PRODUCT_DESCRIPTION") + " - " + rs.getDouble("PRODUCT_PRICE") + "\n";
-            }
-            //EmailSender.sendEmail(to, subject, body);
-        } catch (SQLException ex) {
-            Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     */
 }

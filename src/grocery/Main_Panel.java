@@ -1,10 +1,6 @@
 package grocery;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.mail.MessagingException;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -17,7 +13,7 @@ public class Main_Panel extends JPanel
 
     JSplitPane[] split_pane = new JSplitPane[2];
     JTabbedPane[] tabbed_pane = new JTabbedPane[2];
-    JScrollPane[] scroll_pane = new JScrollPane[4];
+    JScrollPane[] scroll_pane = new JScrollPane[5];
 
     JButton[] main_button = new JButton[2];
     JButton[] menu_button = new JButton[5];
@@ -30,10 +26,12 @@ public class Main_Panel extends JPanel
 
     JTextField[] text = new JTextField[5];
 
-    JTable product_table, customer_table, sales_table, checkout_table;
+    JTable product_table, customer_table, sales_table, checkout_table, items_sold_table;
 
     Main_Panel(Grocery grocery, Functions function)
     {   
+        function.main_Panel(this);
+        
         setLayout(new BorderLayout(0, 0));
         for(int i = 0;i < 7;i++)
         {
@@ -41,11 +39,11 @@ public class Main_Panel extends JPanel
             if(i < 5)
             {
                 text[i] = new JTextField();
+                scroll_pane[i] = new JScrollPane();
                 if (i < 4)
                 {
                     main_panel[i] = new JPanel();
                     purchase_panel[i] = new JPanel();
-                    scroll_pane[i] = new JScrollPane();
                     if (i < 2)
                     {
                         split_pane[i] = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -176,6 +174,16 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {   
+                int row = 0;
+                for(int i = 0; i < product_table.getRowCount(); i++)
+                {
+                    if(text[0].getText().matches(String.valueOf(product_table.getValueAt(i, 0))))
+                    {
+                        row = i;
+                        break;
+                    }
+                }
+                
                 if(text[1].getText().matches("") &&
                    text[2].getText().matches("") &&
                    text[3].getText().matches("") &&
@@ -183,7 +191,15 @@ public class Main_Panel extends JPanel
                 {
                     JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else if(productExists(text[1].getText()))
+                else if(text[0].getText().matches(String.valueOf(product_table.getValueAt(row, 3))) == false &&
+                        text[1].getText().matches(String.valueOf(product_table.getValueAt(row, 4))) == false)
+                {
+                    JOptionPane.showMessageDialog(null, "Those can't be change", "Error", JOptionPane.ERROR_MESSAGE);
+                    clear();
+                }
+                else if(text[2].getText().matches(String.valueOf(product_table.getValueAt(row, 2))) &&
+                        text[3].getText().matches(String.valueOf(product_table.getValueAt(row, 3))) &&
+                        text[4].getText().matches(String.valueOf(product_table.getValueAt(row, 4))))
                 {
                     JOptionPane.showMessageDialog(null, "Please change something", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -224,7 +240,7 @@ public class Main_Panel extends JPanel
             public void actionPerformed(ActionEvent e)
             {
                 split_pane[1].setTopComponent(menu_panel[5]);
-                split_pane[1].setBottomComponent(menu_panel[3]);
+                split_pane[1].setBottomComponent(bottom_panel[1]);
                 split_pane[1].getTopComponent();
                 split_pane[1].getBottomComponent();
                 split_pane[1].setDividerLocation(200);
@@ -234,12 +250,13 @@ public class Main_Panel extends JPanel
                 menu_panel[6].add(split_pane[1]);
 
                 function.read_customer();
+                function.read_sales();
 
-                tabbed_pane[0].add("Customers",menu_panel[4]);
-                tabbed_pane[0].add("Sales",menu_panel[6]);
+                tabbed_pane[1].add("Customers",menu_panel[4]);
+                tabbed_pane[1].add("Sales",menu_panel[6]);
 
                 clear();
-                change_panel(menu_panel[0], tabbed_pane[0]);
+                change_panel(menu_panel[0], tabbed_pane[1]);
             }
         });
 
@@ -272,8 +289,7 @@ public class Main_Panel extends JPanel
         }
 
         menu_panel[3].setLayout(new BorderLayout(0, 0));
-        function.table_product_function = new DefaultTableModel()
-        {
+        function.table_product_function = new DefaultTableModel() {
             {
                 addColumn("Product ID");
                 addColumn("Description");
@@ -292,7 +308,7 @@ public class Main_Panel extends JPanel
         scroll_pane[0].setViewportView(product_table);
         menu_panel[3].add(scroll_pane[0]);
 
-        menu_panel[4].setLayout(new BorderLayout());
+        menu_panel[4].setLayout(new BorderLayout(0,0));
         function.table_customer_function = new DefaultTableModel() {
             {
                 addColumn("Customer ID");
@@ -308,7 +324,7 @@ public class Main_Panel extends JPanel
         scroll_pane[1].setViewportView(customer_table);
         menu_panel[4].add(scroll_pane[1], BorderLayout.CENTER);
 
-        menu_panel[5].setLayout(new BorderLayout());
+        menu_panel[5].setLayout(new BorderLayout(0,0));
         function.table_sales_function = new DefaultTableModel() {
             {
                 addColumn("Date");
@@ -320,19 +336,41 @@ public class Main_Panel extends JPanel
             }
         };
         sales_table = new JTable(function.table_sales_function);
-        sales_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        sales_table.getColumnModel().getColumn(0).setPreferredWidth(65);
         sales_table.getColumnModel().getColumn(1).setPreferredWidth(50);
         sales_table.getColumnModel().getColumn(2).setPreferredWidth(50);
         sales_table.getColumnModel().getColumn(3).setPreferredWidth(70);
-        sales_table.getColumnModel().getColumn(4).setPreferredWidth(200);
+        sales_table.getColumnModel().getColumn(4).setPreferredWidth(190);
         sales_table.getColumnModel().getColumn(5).setPreferredWidth(100);
         sales_table.getTableHeader().setReorderingAllowed(false);
         scroll_pane[2].setViewportView(sales_table);
         menu_panel[5].add(scroll_pane[2], BorderLayout.CENTER);
-
+        
+        bottom_panel[1].setLayout(new BorderLayout(0, 0));
+        function.table_items_sold_function = new DefaultTableModel() {
+            {
+                addColumn("Product ID");
+                addColumn("Description");
+                addColumn("Quantity");
+                addColumn("Unit");
+                addColumn("Price");
+            }
+        };
+        items_sold_table = new JTable(function.table_items_sold_function);
+        items_sold_table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        items_sold_table.getColumnModel().getColumn(1).setPreferredWidth(250);
+        items_sold_table.getColumnModel().getColumn(2).setPreferredWidth(50);
+        items_sold_table.getColumnModel().getColumn(3).setPreferredWidth(50);
+        items_sold_table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        items_sold_table.getTableHeader().setReorderingAllowed(false);
+        scroll_pane[3].setViewportView(items_sold_table);
+        bottom_panel[1].add(scroll_pane[3],BorderLayout.CENTER);
+        
         product_table.setDefaultEditor(Object.class, null);
         customer_table.setDefaultEditor(Object.class, null);
         sales_table.setDefaultEditor(Object.class, null);
+        items_sold_table.setDefaultEditor(Object.class, null);
+        
         product_table.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -345,6 +383,18 @@ public class Main_Panel extends JPanel
                     {
                         text[i].setText(String.valueOf(product_table.getValueAt(row, i)));
                     }
+                }
+            }
+        });
+        items_sold_table.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = sales_table.rowAtPoint(e.getPoint());
+                int col = sales_table.columnAtPoint(e.getPoint());
+
+                if (row >= 0 && col >= 0) {    
+                    function.read_items_sold(Integer.parseInt(String.valueOf(sales_table.getValueAt(row, 3))));
                 }
             }
         });
@@ -372,6 +422,14 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                if(checkout_table.getRowCount() != 0)
+                {
+                    for(int i = checkout_table.getRowCount() - 1; i >= 0;i--)
+                    {
+                        ((DefaultTableModel) checkout_table.getModel()).removeRow(i);
+                    }
+                }
+                
                 change_panel(main_panel[2],main_panel[3]);
             }
         });
@@ -423,22 +481,25 @@ public class Main_Panel extends JPanel
                         }
 
                         boolean found = false;
+                        int checkoutQuantity;
+                        int productQuantity;
+                        
                         for (int row = 0; row < checkout_table.getRowCount(); row++)
                         {
                             int tableProductId = Integer.parseInt(String.valueOf(checkout_table.getValueAt(row, 0)));
                             if (tableProductId == Integer.parseInt(rowData[0]))
                             {
-                                int currentQuantity = Integer.parseInt(String.valueOf(checkout_table.getValueAt(row, 2)));
-                                checkout_table.setValueAt(currentQuantity + Integer.parseInt(quantity), row, 2);
+                                checkoutQuantity = Integer.parseInt(String.valueOf(checkout_table.getValueAt(row, 2)));
+                                checkout_table.setValueAt(checkoutQuantity + Integer.parseInt(quantity), row, 2);
                                 found = true;
                                 break;
                             }
                         }
-
+                        
+                        productQuantity = Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, 2)));
+                        product_table.setValueAt(productQuantity - Integer.parseInt(quantity), selectedRow, 2);
                         if (!found)
                         {
-                            int currentQuantity = Integer.parseInt(String.valueOf(product_table.getValueAt(selectedRow, 2)));
-                            product_table.setValueAt(currentQuantity - Integer.parseInt(quantity), selectedRow, 2);
                             ((DefaultTableModel) checkout_table.getModel()).addRow(rowData);
                         }
                     }
@@ -488,7 +549,7 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                function.purchase(checkout_table,customer_table);
+                function.purchase(product_table, checkout_table,customer_table);
             }
         });
         
@@ -520,9 +581,8 @@ public class Main_Panel extends JPanel
         checkout_table.getColumnModel().getColumn(4).setPreferredWidth(50);
         checkout_table.getTableHeader().setReorderingAllowed(false);
         checkout_table.setDefaultEditor(Object.class, null);
-        
-        scroll_pane[3].setViewportView(checkout_table);
-        purchase_panel[1].add(scroll_pane[3], BorderLayout.CENTER);
+        scroll_pane[4].setViewportView(checkout_table);
+        purchase_panel[1].add(scroll_pane[4], BorderLayout.CENTER);
     }
 
     public static boolean isValidEmailFormat(String email)
