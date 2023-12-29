@@ -27,7 +27,8 @@ public class Main_Panel extends JPanel
     JTextField[] text = new JTextField[5];
 
     JTable product_table, customer_table, sales_table, checkout_table, items_sold_table;
-
+    ListSelectionModel product_selection, customer_selection, sales_selection, checkout_selection, items_sold_selection;
+    
     Main_Panel(Grocery grocery, Functions function)
     {   
         function.main_Panel(this);
@@ -103,7 +104,7 @@ public class Main_Panel extends JPanel
                 function.read_product();
 
                 tabbed_pane[0].add("Products",menu_panel[3]);
-                tabbed_pane[0].add("Checkout",purchase_panel[1]);
+                tabbed_pane[0].add("Cart",purchase_panel[1]);
 
                 clear();
                 change_panel(purchase_panel[0], tabbed_pane[0]);
@@ -129,17 +130,20 @@ public class Main_Panel extends JPanel
         menu_panel[0].add(menu_button[1] = new JButton("Update Product"));
         menu_panel[0].add(menu_button[2] = new JButton("Delete Product"));
         menu_panel[0].add(menu_button[3] = new JButton("Records"));
+        menu_panel[0].add(menu_button[4] = new JButton("Generate Report"));
 
         back_button[0].setBounds(45,50,110,30);
-        menu_button[0].setBounds(100,100,70,70);
-        menu_button[1].setBounds(100,190,70,70);
-        menu_button[2].setBounds(100,280,70,70);
-        menu_button[3].setBounds(100,370,70,70);
+        menu_button[0].setBounds(100,100,60,60);
+        menu_button[1].setBounds(100,170,60,60);
+        menu_button[2].setBounds(100,240,60,60);
+        menu_button[3].setBounds(100,310,60,60);
+        menu_button[4].setBounds(100,380,60,60);
 
         back_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 change_panel(main_panel[2],main_panel[3]);
+                function.table_items_sold_function.setRowCount(0);
             }
         });
         menu_button[0].addActionListener(new ActionListener() {
@@ -168,6 +172,7 @@ public class Main_Panel extends JPanel
 
                 function.read_product();
                 change_panel(null,split_pane());
+                function.table_items_sold_function.setRowCount(0);
             }
         });
         menu_button[1].addActionListener(new ActionListener() {
@@ -191,15 +196,17 @@ public class Main_Panel extends JPanel
                 {
                     JOptionPane.showMessageDialog(null, "Please fill out the form", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else if(text[0].getText().matches(String.valueOf(product_table.getValueAt(row, 3))) == false &&
-                        text[1].getText().matches(String.valueOf(product_table.getValueAt(row, 4))) == false)
+                else if(text[0].getText().matches(String.valueOf(product_table.getValueAt(row,0))) != true)
                 {
-                    JOptionPane.showMessageDialog(null, "Those can't be change", "Error", JOptionPane.ERROR_MESSAGE);
-                    clear();
+                    JOptionPane.showMessageDialog(null, "Product ID can't be changed", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                else if(text[2].getText().matches(String.valueOf(product_table.getValueAt(row, 2))) &&
-                        text[3].getText().matches(String.valueOf(product_table.getValueAt(row, 3))) &&
-                        text[4].getText().matches(String.valueOf(product_table.getValueAt(row, 4))))
+                else if(text[1].getText().equals(product_table.getValueAt(row,1)) != true)
+                {
+                    JOptionPane.showMessageDialog(null, "Product Description can't be changed", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                else if(text[2].getText().equals(product_table.getValueAt(row, 2)) &&
+                        text[3].getText().equals(product_table.getValueAt(row, 3)) &&
+                        text[4].getText().equals(product_table.getValueAt(row, 4)))
                 {
                     JOptionPane.showMessageDialog(null, "Please change something", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -215,6 +222,7 @@ public class Main_Panel extends JPanel
 
                 function.read_product();
                 change_panel(null,split_pane());
+                function.table_items_sold_function.setRowCount(0);
             }
         });
         menu_button[2].addActionListener(new ActionListener() {
@@ -233,6 +241,7 @@ public class Main_Panel extends JPanel
 
                 function.read_product();
                 change_panel(null,split_pane());
+                function.table_items_sold_function.setRowCount(0);
             }
         });
         menu_button[3].addActionListener(new ActionListener() {
@@ -257,6 +266,14 @@ public class Main_Panel extends JPanel
 
                 clear();
                 change_panel(menu_panel[0], tabbed_pane[1]);
+                function.table_items_sold_function.setRowCount(0);
+            }
+        });
+        menu_button[4].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Generate Sales Report");
             }
         });
 
@@ -305,6 +322,9 @@ public class Main_Panel extends JPanel
         product_table.getColumnModel().getColumn(3).setPreferredWidth(50);
         product_table.getColumnModel().getColumn(4).setPreferredWidth(50);
         product_table.getTableHeader().setReorderingAllowed(false);
+        product_table.getTableHeader().setResizingAllowed(false);
+        product_selection = product_table.getSelectionModel();
+        product_selection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scroll_pane[0].setViewportView(product_table);
         menu_panel[3].add(scroll_pane[0]);
 
@@ -321,6 +341,9 @@ public class Main_Panel extends JPanel
         customer_table.getColumnModel().getColumn(1).setPreferredWidth(150);
         customer_table.getColumnModel().getColumn(2).setPreferredWidth(200);
         customer_table.getTableHeader().setReorderingAllowed(false);
+        customer_table.getTableHeader().setResizingAllowed(false);
+        customer_selection = customer_table.getSelectionModel();
+        customer_selection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scroll_pane[1].setViewportView(customer_table);
         menu_panel[4].add(scroll_pane[1], BorderLayout.CENTER);
 
@@ -343,6 +366,9 @@ public class Main_Panel extends JPanel
         sales_table.getColumnModel().getColumn(4).setPreferredWidth(190);
         sales_table.getColumnModel().getColumn(5).setPreferredWidth(100);
         sales_table.getTableHeader().setReorderingAllowed(false);
+        sales_table.getTableHeader().setResizingAllowed(false);
+        sales_selection = sales_table.getSelectionModel();
+        sales_selection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scroll_pane[2].setViewportView(sales_table);
         menu_panel[5].add(scroll_pane[2], BorderLayout.CENTER);
         
@@ -354,15 +380,20 @@ public class Main_Panel extends JPanel
                 addColumn("Quantity");
                 addColumn("Unit");
                 addColumn("Price");
+                addColumn("Total Price");
             }
         };
         items_sold_table = new JTable(function.table_items_sold_function);
         items_sold_table.getColumnModel().getColumn(0).setPreferredWidth(50);
         items_sold_table.getColumnModel().getColumn(1).setPreferredWidth(250);
-        items_sold_table.getColumnModel().getColumn(2).setPreferredWidth(50);
-        items_sold_table.getColumnModel().getColumn(3).setPreferredWidth(50);
+        items_sold_table.getColumnModel().getColumn(2).setPreferredWidth(45);
+        items_sold_table.getColumnModel().getColumn(3).setPreferredWidth(45);
         items_sold_table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        items_sold_table.getColumnModel().getColumn(5).setPreferredWidth(60);
         items_sold_table.getTableHeader().setReorderingAllowed(false);
+        items_sold_table.getTableHeader().setResizingAllowed(false);
+        items_sold_selection = items_sold_table.getSelectionModel();
+        items_sold_selection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scroll_pane[3].setViewportView(items_sold_table);
         bottom_panel[1].add(scroll_pane[3],BorderLayout.CENTER);
         
@@ -386,7 +417,7 @@ public class Main_Panel extends JPanel
                 }
             }
         });
-        items_sold_table.addMouseListener(new MouseAdapter()
+        sales_table.addMouseListener(new MouseAdapter()
         {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -394,7 +425,7 @@ public class Main_Panel extends JPanel
                 int col = sales_table.columnAtPoint(e.getPoint());
 
                 if (row >= 0 && col >= 0) {    
-                    function.read_items_sold(Integer.parseInt(String.valueOf(sales_table.getValueAt(row, 3))));
+                    function.read_items_sold(Integer.parseInt(String.valueOf(sales_table.getValueAt(row, 2))), product_table);
                 }
             }
         });
@@ -414,9 +445,9 @@ public class Main_Panel extends JPanel
         purchase_label[0].setBounds(15,10,200,30);
 
         back_button[1].setBounds(45,50,110,30);
-        purchase_button[0].setBounds(100,100,70,70);
-        purchase_button[1].setBounds(100,190,70,70);
-        purchase_button[2].setBounds(100,280,70,70);
+        purchase_button[0].setBounds(90,120,80,80);
+        purchase_button[1].setBounds(90,230,80,80);
+        purchase_button[2].setBounds(90,340,80,80);
 
         back_button[1].addActionListener(new ActionListener() {
             @Override
@@ -549,7 +580,15 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                function.purchase(product_table, checkout_table,customer_table);
+                int checkout = checkout_table.getRowCount();
+                if(checkout == 0)
+                {
+                    JOptionPane.showMessageDialog(null, "Your cart is empty");
+                }
+                else
+                {
+                    function.purchase(product_table, checkout_table,customer_table);
+                }
             }
         });
         
@@ -580,6 +619,9 @@ public class Main_Panel extends JPanel
         checkout_table.getColumnModel().getColumn(3).setPreferredWidth(50);
         checkout_table.getColumnModel().getColumn(4).setPreferredWidth(50);
         checkout_table.getTableHeader().setReorderingAllowed(false);
+        checkout_table.getTableHeader().setResizingAllowed(false);
+        checkout_selection = checkout_table.getSelectionModel();
+        checkout_selection.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         checkout_table.setDefaultEditor(Object.class, null);
         scroll_pane[4].setViewportView(checkout_table);
         purchase_panel[1].add(scroll_pane[4], BorderLayout.CENTER);

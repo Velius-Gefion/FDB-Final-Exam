@@ -128,61 +128,36 @@ public class Functions
     public void create_items_sold(int[] productID, int[] soldQuantity)
     {
         read_sales();
-        
-        boolean found = false;
-        int similar = 0;
         String [][] salesData = new String [table_sales_function.getRowCount()][table_sales_function.getColumnCount()];
-        
-        for(int i = 0;i < table_sales_function.getRowCount();i++)
+        int latestSalesID = 0;
+        for(int i = 0; i < table_sales_function.getRowCount(); i++)
         {
-            for(int j = 0;j < table_sales_function.getColumnCount();j++)
+            for(int j = 0; j < table_sales_function.getColumnCount(); j++)
             {
-                salesData[i][j] = String.valueOf(table_sales_function.getValueAt(i, j));
-            }
-            
-            read_items_sold(Integer.parseInt(salesData[i][2]));
-            String [][] itemsData = new String [table_items_sold_function.getRowCount()][table_items_sold_function.getColumnCount()];
-            
-            for(int k = 0;k < table_items_sold_function.getRowCount();k++)
-            {
-                for(int l = 0;l < table_items_sold_function.getColumnCount();l++)
-                {
-                    itemsData[k][l] = String.valueOf(table_items_sold_function.getValueAt(k, l));
-                }
-                
-                if(k > 0 && itemsData[k][2].equals(itemsData[k - 1][2]))
-                {
-                    similar++;
-                }
-                else if(itemsData[k][2].equals(itemsData[k - 1][2]) == false)
-                {
-                    similar = 0;
-                }
-            }
-            
-            if (similar == 0)
-            {
-                found = true;
-                break;
+                salesData[i][j] = String.valueOf(table_sales_function.getValueAt(i,j));
             }
         }
         
-        if(!found)
-        {
-            try {
-                PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO items_sold (SALES_ID, PRODUCT_ID, SOLD_QUANTITY) VALUES (?, ?, ?)");
+        latestSalesID = Integer.parseInt(salesData[table_sales_function.getRowCount() - 1][2]);
+        
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO items_sold (SALES_ID, PRODUCT_ID, SOLD_QUANTITY) VALUES (?, ?, ?)");
 
-                for(int i = 0;i < productID.length;i++)
-                {
-                    preparedStatement.setInt(1, Integer.parseInt(salesData[0][2]));
-                    preparedStatement.setInt(2, productID[i]);
-                    preparedStatement.setInt(3, soldQuantity[i]);
-                }
+            conn.setAutoCommit(false);
 
-                preparedStatement.executeUpdate();
-            } catch (SQLException ex) {
-                Logger.getLogger(Functions.class.getName()).log(Level.SEVERE, null, ex);
+            for(int i = 0;i < productID.length;i++)
+            {
+                preparedStatement.setInt(1, latestSalesID);
+                preparedStatement.setInt(2, productID[i]);
+                preparedStatement.setInt(3, soldQuantity[i]);
+                preparedStatement.addBatch();
             }
+
+            int [] count = preparedStatement.executeBatch();
+
+            conn.commit();
+        } catch (SQLException ex) {
+            Logger.getLogger(Functions.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -273,36 +248,36 @@ public class Functions
         }
     }
     
-    public void read_items_sold(int salesID)
+    public void read_items_sold(int salesID, JTable product_table)
     {
         try {
             try (Statement statement = conn.createStatement()) {
-                String query = "SELECT * FROM items_sold";
+                String query = "SELECT * FROM items_sold WHERE SALES_ID = " + salesID;
+
                 try (ResultSet resultSet = statement.executeQuery(query)) {
-                    java.sql.ResultSetMetaData metaData = resultSet.getMetaData();
-                    int columnCount = metaData.getColumnCount();
-                    int rowCount = table_items_sold_function.getRowCount();
-                    
-                    for(int i = rowCount - 1; i >= 0; i--)
-                    {
-                        table_items_sold_function.removeRow(i);
-                    }
-                    
+
+                    table_items_sold_function.setRowCount(0);
+
                     while (resultSet.next()) {
-                        Object[] row = new Object[columnCount];
-                        for (int i = 1; i <= columnCount; i++) {
-                            row[i - 1] = resultSet.getObject(i);
-                        }
-                        
-                        if(salesID == Integer.parseInt(String.valueOf(row[2])))
-                        {
-                            table_items_sold_function.addRow(row);
+                        String databaseProductID = resultSet.getString(2);
+                        for (int i = 0; i < product_table.getRowCount(); i++) {
+                            String productID = String.valueOf(product_table.getValueAt(i, 0));
+                            if (databaseProductID.equals(productID)) {
+                                Object[] row = new Object[6];
+                                row[0] = product_table.getValueAt(i, 0);
+                                row[1] = product_table.getValueAt(i, 1);
+                                row[2] = resultSet.getObject(3);
+                                row[3] = product_table.getValueAt(i, 3);
+                                row[4] = product_table.getValueAt(i, 4);
+                                row[5] = (Double.parseDouble(String.valueOf(resultSet.getObject(3))) * Double.parseDouble(String.valueOf(product_table.getValueAt(i, 4))));
+                                table_items_sold_function.addRow(row);
+                            }
                         }
                     }
                 }
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error fetching data from the database.");
+            JOptionPane.showMessageDialog(null, "Error fetching data from the database: " + e.getMessage());
         }
     }
     
@@ -361,7 +336,10 @@ public class Functions
      
     protected MimeMessage draftEmail(int Customer_ID,String name, String email, String[][] order) throws AddressException, MessagingException, IOException
     {
-        String emailSubject = "Order #";
+        read_sales();
+        int orderNumber = table_sales_function.getRowCount() + 1;
+        
+        String emailSubject = "Order #" + orderNumber;
         String orderList = "";
         double total = 0;
         for (String[] order1 : order)
@@ -456,31 +434,33 @@ public class Functions
                 {
                     JOptionPane.showMessageDialog(null, "Please fill out the window", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
-                while (true)
+                else
                 {
-                    email = JOptionPane.showInputDialog("Please enter your email address:");
-                    if(email == null || !isValidEmailFormat(email))
+                    while (true)
                     {
-                        JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
+                        email = JOptionPane.showInputDialog("Please enter your email address:");
+                        if (email == null)
+                        {
+                            break;
+                        }
+                        else if (!isValidEmailFormat(email))
+                        {
+                            JOptionPane.showMessageDialog(null, "Please enter a valid email", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                if(email != null)
-                {
                     break;
                 }
             }
-
+            
             String [] customerRow = new String [3];
             int customerID = 0;
             boolean found = false;
             read_customer();
-            if(!("".equals(name)) && !("".equals(email)))
+            if (name != null && !name.isEmpty() && email != null && !email.isEmpty())
             {
                 for(int i = 0;i < customer_table.getRowCount();i++)
                 {
@@ -489,7 +469,7 @@ public class Functions
                         customerRow[j] = String.valueOf(customer_table.getValueAt(i, j));
                     }
 
-                    if(customerRow[2].matches(email))
+                    if(customerRow[2].equals(email))
                     {
                         customerID = Integer.parseInt(customerRow[0]);
                         found = true;
@@ -500,7 +480,7 @@ public class Functions
                 {
                     System.out.println("Email saved into the database");
                     create_customer(name, email);
-                    customerID = Integer.parseInt(customerRow[0]) + 1;
+                    customerID += 1;
                 }
 
                 int[] productID_checkout = new int[checkout_table.getRowCount()];
@@ -552,13 +532,14 @@ public class Functions
                 for(int i = 0; i < product_table.getRowCount();i++)
                 {
                     String productID = String.valueOf(product_table.getValueAt(i, 0));
+                    int productQuantity = Integer.parseInt(String.valueOf(product_table.getValueAt(i, 2)));
                     for(int j = 0;j < order.length;j++)
                     {
-                        if(productID.matches(String.valueOf(orderData[j][0])))
+                        if(productID.equals(orderData[j][0]))
                         {
                             update(Integer.parseInt(String.valueOf(orderData[j][0])),
                             String.valueOf(orderData[j][1]),
-                        Integer.parseInt(String.valueOf(orderData[j][2])),
+                        productQuantity,
                                   String.valueOf(orderData[j][3]),
                                  Double.parseDouble(String.valueOf(orderData[j][4])));
                         }
