@@ -1,4 +1,5 @@
 package grocery;
+import java.sql.SQLException;
 import javax.swing.*;
 
 public final class Grocery extends JFrame
@@ -27,7 +28,7 @@ public final class Grocery extends JFrame
         repaint();
     }
     
-    Grocery()
+    Grocery() throws SQLException
     {
         setTitle("Grocery");
         setSize(300, 280);
@@ -40,13 +41,14 @@ public final class Grocery extends JFrame
         main_Panel = new Main_Panel(this, function);
         
         function.connect();
+        function.create_database();
         //show_Login_Panel();
         show_Main_Panel();
         
         setVisible(true);
     }
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws SQLException
     {
         Grocery app = new Grocery();
     }

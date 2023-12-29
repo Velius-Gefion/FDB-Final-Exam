@@ -38,6 +38,7 @@ public class Functions
     Session newSession = null;
     MimeMessage mimeMessage = null;
     Main_Panel mainPanel;
+    String DATABASE_NAME = "inventory";
     
     Functions(Grocery grocery)
     {
@@ -74,6 +75,74 @@ public class Functions
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login_Panel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void create_database() throws SQLException
+    {
+        try (
+            Statement statement = conn.createStatement()) {
+
+            String checkDatabaseQuery = "SHOW DATABASES LIKE '" + DATABASE_NAME + "'";
+            if (!statement.executeQuery(checkDatabaseQuery).next()) {
+                String createDatabaseQuery = "CREATE DATABASE " + DATABASE_NAME;
+                statement.executeUpdate(createDatabaseQuery);
+                
+                create_table();
+            }
+        }
+    }
+    
+    private void create_table() throws SQLException
+    {
+        try (
+            Statement statement = conn.createStatement()) {
+            
+            statement.execute("USE " + DATABASE_NAME);
+            
+            String createUserTable = "CREATE TABLE IF NOT EXISTS users ("
+                    + "USER_ID int, "
+                    + "USERNAME VARCHAR(255), "
+                    + "PASSWORD VARCHAR(255), "
+                    + "PRIMARY KEY (USER_ID)"
+                    + ")";
+            statement.executeUpdate(createUserTable);
+            
+            String createProductTable = "CREATE TABLE IF NOT EXISTS products ("
+                    + "PRODUCT_ID INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "PRODUCT_DESCRIPTION VARCHAR(255), "
+                    + "PRODUCT_AVAILABLE_QUANTITY VARCHAR(255), "
+                    + "PRODUCT_UNIT VARCHAR(255), "
+                    + "PRODUCT_PRICE DOUBLE, "
+                    + ")";
+            statement.executeUpdate(createProductTable);
+            
+            String createCustomerTable = "CREATE TABLE IF NOT EXISTS customer ("
+                    + "CUSTOMER_ID INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "CUSTOMER_NAME VARCHAR(255), "
+                    + "CUSTOMER_EMAIL VARCHAR(255), "
+                    + ")";
+            statement.executeUpdate(createCustomerTable);
+            
+            String createSalesTable = "CREATE TABLE IF NOT EXISTS sales ("
+                    + "DATE DATE, "
+                    + "TIME TIME, "
+                    + "SALES_ID INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "CUSTOMER_ID INT, "
+                    + "CUSTOMER_NAME VARCHAR(255), "
+                    + "TOTAL_SALES DOUBLE, "
+                    + "FOREIGN KEY (CUSTOMER_ID) REFERENCES customer(CUSTOMER_ID), "
+                    + ")";
+            statement.executeUpdate(createSalesTable);
+            
+            String createItemsSoldTable = "CREATE TABLE IF NOT EXISTS items_sold ("
+                    + "SALES_ID INT, "
+                    + "CUSTOMER_ID INT, "
+                    + "SOLD_QUANTITY INT, "
+                    + "FOREIGN KEY (SALES_ID) REFERENCES sales(SALES_ID), "
+                    + "FOREIGN KEY (PRODUCT_ID) REFERENCES products(PRODUCT_ID), "
+                    + ")";
+            statement.executeUpdate(createItemsSoldTable);
         }
     }
     
@@ -307,7 +376,7 @@ public class Functions
         }
     }
     
-    public void setUpServerProperties()
+    private void setUpServerProperties()
     {
         Properties properties = System.getProperties();
         properties.put("mail.smtp.port","587");
@@ -316,7 +385,7 @@ public class Functions
         newSession = Session.getDefaultInstance(properties,null);
     }
 
-    public void sendEmail() throws MessagingException
+    private void sendEmail() throws MessagingException
     {
         String fromUser = "dummyemail@gmail.com"; //Paki butang sa inyo email diri
         String fromUserPassword = "dummypassword"; //ug password sa inyong email

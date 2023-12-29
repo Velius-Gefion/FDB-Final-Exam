@@ -29,6 +29,8 @@ public class Main_Panel extends JPanel
     JTable product_table, customer_table, sales_table, checkout_table, items_sold_table;
     ListSelectionModel product_selection, customer_selection, sales_selection, checkout_selection, items_sold_selection;
     
+    ImageIcon menu, purchase, add, remove, checkout, update, delete, records, generate;
+    
     Main_Panel(Grocery grocery, Functions function)
     {   
         function.main_Panel(this);
@@ -627,7 +629,7 @@ public class Main_Panel extends JPanel
         purchase_panel[1].add(scroll_pane[4], BorderLayout.CENTER);
     }
 
-    public static boolean isValidEmailFormat(String email)
+    protected static boolean isValidEmailFormat(String email)
     {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
@@ -646,7 +648,7 @@ public class Main_Panel extends JPanel
         return false;
     }
 
-    public JPanel split_pane()
+    private JPanel split_pane()
     {
         split_pane[0].setTopComponent(menu_panel[3]);
         split_pane[0].setBottomComponent(bottom_panel[0]);
@@ -660,7 +662,7 @@ public class Main_Panel extends JPanel
         return menu_panel[2];
     }
 
-    public void change_panel(JPanel panel_1, JPanel panel_2)
+    private void change_panel(JPanel panel_1, JPanel panel_2)
     {
         if (panel_1 != null)
         {
@@ -675,7 +677,7 @@ public class Main_Panel extends JPanel
         main_panel[1].repaint();
     }
 
-    public void change_panel(JPanel panel_1, JTabbedPane panel_2)
+    private void change_panel(JPanel panel_1, JTabbedPane panel_2)
     {
         if (panel_1 != null)
         {
@@ -690,7 +692,7 @@ public class Main_Panel extends JPanel
         main_panel[1].repaint();
     }
 
-    public void clear()
+    private void clear()
     {
         for(int i = 0;i < 5;i++)
         {
