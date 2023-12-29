@@ -15,12 +15,12 @@ public class Main_Panel extends JPanel
     JTabbedPane[] tabbed_pane = new JTabbedPane[2];
     JScrollPane[] scroll_pane = new JScrollPane[5];
 
-    JButton[] main_button = new JButton[2];
+    JButton[] main_button = new JButton[3];
     JButton[] menu_button = new JButton[5];
     JButton[] purchase_button = new JButton[3];
     JButton[] back_button = new JButton[2];
 
-    JLabel[] main_label = new JLabel[3];
+    JLabel[] main_label = new JLabel[4];
     JLabel[] menu_label = new JLabel[5];
     JLabel[] purchase_label = new JLabel[3];
 
@@ -29,8 +29,16 @@ public class Main_Panel extends JPanel
     JTable product_table, customer_table, sales_table, checkout_table, items_sold_table;
     ListSelectionModel product_selection, customer_selection, sales_selection, checkout_selection, items_sold_selection;
     
-    ImageIcon menu, purchase, add, remove, checkout, update, delete, records, generate;
-    
+    ImageIcon menu = new ImageIcon(Grocery.class.getResource("/resources/menu.png")), 
+              purchase = new ImageIcon(Grocery.class.getResource("/resources/purchase.png")), 
+              add = new ImageIcon(Grocery.class.getResource("/resources/add.png")), 
+              remove = new ImageIcon(Grocery.class.getResource("/resources/remove.png")), 
+              checkout = new ImageIcon(Grocery.class.getResource("/resources/cart.png")), 
+              update = new ImageIcon(Grocery.class.getResource("/resources/update.png")), 
+              delete = new ImageIcon(Grocery.class.getResource("/resources/delete.png")), 
+              records = new ImageIcon(Grocery.class.getResource("/resources/records.png")), 
+              generate = new ImageIcon(Grocery.class.getResource("/resources/generate.png"));
+    //Image;
     Main_Panel(Grocery grocery, Functions function)
     {   
         function.main_Panel(this);
@@ -75,21 +83,26 @@ public class Main_Panel extends JPanel
         main_panel[2].setLayout(null);
         main_panel[2].add(main_button[0] = new JButton("Menu"));
         main_panel[2].add(main_button[1] = new JButton("Purchase"));
+        main_panel[2].add(main_button[2] = new JButton("Log-out"));
         main_panel[2].add(main_label[0] = new JLabel("Grocery Menu"));
         main_panel[2].add(main_label[1] = new JLabel("Menu"));
         main_panel[2].add(main_label[2] = new JLabel("Purchase"));
+        main_panel[2].add(main_label[3] = new JLabel("Log-out"));
 
         main_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
 
         main_label[1].setFont(new java.awt.Font("Segoe UI", 1, 20));
         main_label[2].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        main_label[3].setFont(new java.awt.Font("Segoe UI", 1, 20));
 
-        main_button[0].setBounds(50,100,100,100);
-        main_button[1].setBounds(50,300,100,100);
+        main_button[0].setBounds(50,80,100,100);
+        main_button[1].setBounds(50,210,100,100);
+        main_button[2].setBounds(50,340,100,100);
 
         main_label[0].setBounds(15,10,200,30);
-        main_label[1].setBounds(70,70,100,30);
-        main_label[2].setBounds(57,270,100,30);
+        main_label[1].setBounds(70,50,100,30);
+        main_label[2].setBounds(57,180,100,30);
+        main_label[3].setBounds(61,310,100,30);
 
         main_button[0].addActionListener(new ActionListener() {
             @Override
@@ -110,6 +123,13 @@ public class Main_Panel extends JPanel
 
                 clear();
                 change_panel(purchase_panel[0], tabbed_pane[0]);
+            }
+        });
+        main_button[2].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                grocery.show_Login_Panel();
             }
         });
 

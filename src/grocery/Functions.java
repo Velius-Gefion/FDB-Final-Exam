@@ -55,7 +55,7 @@ public class Functions
     {
         try
         {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root", "");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "");
         } catch (SQLException ex) {
             Logger.getLogger(Login_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -90,6 +90,10 @@ public class Functions
                 
                 create_table();
             }
+            else
+            {
+                statement.execute("USE " + DATABASE_NAME);
+            }
         }
     }
     
@@ -101,10 +105,10 @@ public class Functions
             statement.execute("USE " + DATABASE_NAME);
             
             String createUserTable = "CREATE TABLE IF NOT EXISTS users ("
-                    + "USER_ID int, "
+                    + "USER_ID INT, "
                     + "USERNAME VARCHAR(255), "
                     + "PASSWORD VARCHAR(255), "
-                    + "PRIMARY KEY (USER_ID)"
+                    + "PRIMARY KEY (USER_ID) "
                     + ")";
             statement.executeUpdate(createUserTable);
             
@@ -113,14 +117,14 @@ public class Functions
                     + "PRODUCT_DESCRIPTION VARCHAR(255), "
                     + "PRODUCT_AVAILABLE_QUANTITY VARCHAR(255), "
                     + "PRODUCT_UNIT VARCHAR(255), "
-                    + "PRODUCT_PRICE DOUBLE, "
+                    + "PRODUCT_PRICE DOUBLE "
                     + ")";
             statement.executeUpdate(createProductTable);
             
             String createCustomerTable = "CREATE TABLE IF NOT EXISTS customer ("
                     + "CUSTOMER_ID INT AUTO_INCREMENT PRIMARY KEY, "
                     + "CUSTOMER_NAME VARCHAR(255), "
-                    + "CUSTOMER_EMAIL VARCHAR(255), "
+                    + "CUSTOMER_EMAIL VARCHAR(255) "
                     + ")";
             statement.executeUpdate(createCustomerTable);
             
@@ -131,16 +135,16 @@ public class Functions
                     + "CUSTOMER_ID INT, "
                     + "CUSTOMER_NAME VARCHAR(255), "
                     + "TOTAL_SALES DOUBLE, "
-                    + "FOREIGN KEY (CUSTOMER_ID) REFERENCES customer(CUSTOMER_ID), "
+                    + "FOREIGN KEY (CUSTOMER_ID) REFERENCES customer(CUSTOMER_ID) "
                     + ")";
             statement.executeUpdate(createSalesTable);
             
             String createItemsSoldTable = "CREATE TABLE IF NOT EXISTS items_sold ("
                     + "SALES_ID INT, "
-                    + "CUSTOMER_ID INT, "
+                    + "PRODUCT_ID INT, "
                     + "SOLD_QUANTITY INT, "
                     + "FOREIGN KEY (SALES_ID) REFERENCES sales(SALES_ID), "
-                    + "FOREIGN KEY (PRODUCT_ID) REFERENCES products(PRODUCT_ID), "
+                    + "FOREIGN KEY (PRODUCT_ID) REFERENCES products(PRODUCT_ID) "
                     + ")";
             statement.executeUpdate(createItemsSoldTable);
         }
