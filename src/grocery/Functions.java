@@ -1,34 +1,22 @@
 package grocery;
 import static grocery.Main_Panel.isValidEmailFormat;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Properties;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import java.util.logging.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+import javax.swing.*;
 import javax.swing.Timer;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class Functions
 {
@@ -641,29 +629,84 @@ public class Functions
         }
     }
     
-    /*
     public void report() throws FileNotFoundException, IOException
     {
-        /*try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM products");
-            ResultSet rs = stmt.executeQuery();
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet("Products");
-            int rowNum = 0;
-            while (rs.next()) {
-                XSSFRow row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(rs.getInt("PRODUCT_ID"));
-                row.createCell(1).setCellValue(rs.getString("PRODUCT_DESCRIPTION"));
-                row.createCell(2).setCellValue(rs.getInt("PRODUCT_AVAILABLE_QUANTITY"));
-                row.createCell(3).setCellValue(rs.getString("PRODUCT_UNIT"));
-                row.createCell(4).setCellValue(rs.getDouble("PRODUCT_PRICE"));
+        List<String> uniqueDates = getUniqueDatesFromSalesTable();
+        Date selectedDate = new Date();
+        
+        JComboBox<String> dateDropdown = new JComboBox<>(uniqueDates.toArray(new String[0]));
+
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Select Date:"));
+        panel.add(dateDropdown);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Date Filter", JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+
+        if (result == JOptionPane.OK_OPTION) {
+            
+            if(dateDropdown.getSelectedItem() instanceof Date)
+            {
+                 selectedDate = (Date) dateDropdown.getSelectedItem();
             }
-            FileOutputStream outputStream = new FileOutputStream("products.xlsx");
-            workbook.write(outputStream);
-            outputStream.close();
+        }
+        
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(selectedDate);
+            String fileName = "reports/" + formattedDate + ".xlsx";
+        
+            XSSFWorkbook workbook = new XSSFWorkbook();
+
+            createSheet(workbook, "Products", "SELECT * FROM products");
+            createSheet(workbook, "Customers", "SELECT * FROM customer");
+            createSheet(workbook, "Sales", "SELECT * FROM sales");
+            createSheet(workbook, "Items Sold", "SELECT * FROM items_sold");
+
+            try (FileOutputStream outputStream = new FileOutputStream(fileName)) {
+                workbook.write(outputStream);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
-        }*
+        }
     }
-    */
+    
+    private void createSheet(XSSFWorkbook workbook, String sheetName, String query) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        XSSFSheet sheet = workbook.createSheet(sheetName);
+
+        int rowNum = 0;
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        XSSFRow headerRow = sheet.createRow(rowNum++);
+        for (int i = 1; i <= columnCount; i++) {
+            headerRow.createCell(i - 1).setCellValue(metaData.getColumnName(i));
+        }
+
+        while (rs.next()) {
+            XSSFRow row = sheet.createRow(rowNum++);
+            for (int i = 1; i <= columnCount; i++) {
+                row.createCell(i - 1).setCellValue(rs.getObject(i).toString());
+            }
+        }
+    }
+    
+    private List<String> getUniqueDatesFromSalesTable() {
+        List<String> uniqueDates = new ArrayList<>();
+
+        try (Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT DISTINCT DATE FROM sales")) {
+
+            while (resultSet.next()) {
+                uniqueDates.add(resultSet.getString("DATE"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return uniqueDates;
+    }
 }

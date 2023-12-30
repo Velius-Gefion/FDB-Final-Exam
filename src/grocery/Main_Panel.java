@@ -1,6 +1,9 @@
 package grocery;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -330,7 +333,11 @@ public class Main_Panel extends JPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Generate Sales Report");
+                try {
+                    function.report();
+                } catch (IOException ex) {
+                    Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
