@@ -190,11 +190,11 @@ public class Main_Panel extends JPanel
         menu_panel[0].add(menu_button[4] = new JButton(generate));
 
         back_button[0].setBounds(45,50,110,30);
-        menu_button[0].setBounds(100,100,60,60);
-        menu_button[1].setBounds(100,170,60,60);
-        menu_button[2].setBounds(100,240,60,60);
-        menu_button[3].setBounds(100,310,60,60);
-        menu_button[4].setBounds(100,380,60,60);
+        menu_button[0].setBounds(110,100,60,60);
+        menu_button[1].setBounds(110,170,60,60);
+        menu_button[2].setBounds(110,240,60,60);
+        menu_button[3].setBounds(110,310,60,60);
+        menu_button[4].setBounds(110,380,60,60);
 
         back_button[0].addActionListener(new ActionListener() {
             @Override

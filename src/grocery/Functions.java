@@ -38,7 +38,7 @@ public class Functions
     Session newSession = null;
     MimeMessage mimeMessage = null;
     Main_Panel mainPanel;
-    String DATABASE_NAME = "inventory";
+    String DATABASE_NAME = "blanco";
     
     Functions(Grocery grocery)
     {
@@ -105,10 +105,9 @@ public class Functions
             statement.execute("USE " + DATABASE_NAME);
             
             String createUserTable = "CREATE TABLE IF NOT EXISTS users ("
-                    + "USER_ID INT, "
+                    + "USER_ID INT AUTO_INCREMENT PRIMARY KEY, "
                     + "USERNAME VARCHAR(255), "
-                    + "PASSWORD VARCHAR(255), "
-                    + "PRIMARY KEY (USER_ID) "
+                    + "PASSWORD VARCHAR(255) "
                     + ")";
             statement.executeUpdate(createUserTable);
             
@@ -147,6 +146,14 @@ public class Functions
                     + "FOREIGN KEY (PRODUCT_ID) REFERENCES products(PRODUCT_ID) "
                     + ")";
             statement.executeUpdate(createItemsSoldTable);
+            
+            PreparedStatement preparedStatement = conn.prepareStatement("INSERT INTO users (USERNAME, PASSWORD) VALUES (?, ?)");
+            
+            preparedStatement.setString(1, "Admin");
+            preparedStatement.setString(2, "12345");
+
+            preparedStatement.executeUpdate();
+            
         }
     }
     
