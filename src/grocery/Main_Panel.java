@@ -2,6 +2,7 @@ package grocery;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -68,7 +69,6 @@ public class Main_Panel extends JPanel
     
     Main_Panel(Grocery grocery, Functions function)
     {   
-        function.main_Panel(this);
         menu = new ImageIcon(menu_resize); 
         purchase = new ImageIcon(purchase_resize);
         logout = new ImageIcon(logout_resize);
@@ -352,7 +352,7 @@ public class Main_Panel extends JPanel
             {
                 try {
                     function.report();
-                } catch (IOException ex) {
+                } catch (IOException | ParseException ex) {
                     Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

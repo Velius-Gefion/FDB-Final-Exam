@@ -6,9 +6,6 @@ import javax.swing.*;
 
 public class Login_Panel extends JPanel
 {
-    Grocery grocery;
-    Functions function;
-    
     JLabel[] label = new JLabel[3];
     JTextField text;
     JPasswordField pass;
@@ -19,9 +16,6 @@ public class Login_Panel extends JPanel
     
     Login_Panel(Grocery grocery, Functions function)
     {
-        this.grocery = grocery; 
-        this.function = function;
-        
         setLayout(null);
         add(label[0] = new JLabel("Grocery Inventory"));
         add(label[1] = new JLabel("Username: "));
@@ -53,6 +47,8 @@ public class Login_Panel extends JPanel
                 else
                 {
                     function.validate(text.getText(),String.valueOf(pass.getPassword()));
+                    text.setText("");
+                    pass.setText("");
                 }
             }
         });

@@ -26,6 +26,7 @@ public class Functions
     Session newSession = null;
     MimeMessage mimeMessage = null;
     Main_Panel mainPanel;
+    Login_Panel loginPanel;
     String DATABASE_NAME = "inventory";
     
     Functions(Grocery grocery)
@@ -34,9 +35,10 @@ public class Functions
         
     }
     
-    public void main_Panel(Main_Panel mainPanel)
+    public void main_Panel(Main_Panel mainPanel, Login_Panel loginPanel)
     {
         this.mainPanel = mainPanel;
+        this.loginPanel = loginPanel;
     }
     
     public void connect()
@@ -60,6 +62,8 @@ public class Functions
                 grocery.show_Main_Panel();
             } else {
                 JOptionPane.showMessageDialog(null, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
+                loginPanel.text.setText("");
+                loginPanel.pass.setText("");
             }
         } catch (SQLException ex) {
             Logger.getLogger(Login_Panel.class.getName()).log(Level.SEVERE, null, ex);
