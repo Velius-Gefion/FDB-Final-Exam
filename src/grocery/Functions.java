@@ -386,8 +386,8 @@ public class Functions
 
     private void sendEmail() throws MessagingException
     {
-        String fromUser = "dummyemail@gmail.com"; //Paki butang sa inyo email diri
-        String fromUserPassword = "dummypassword"; //ug password sa inyong email
+        String fromUser = "dummyemail@gmail.com"; //Pakibutang sa inyo Gmail diri
+        String fromUserPassword = "dummypassword"; // and App Password gikan sa inyong Gmail
         String emailHost = "smtp.gmail.com";
         try (Transport transport = newSession.getTransport("smtp"))
         {
@@ -629,10 +629,10 @@ public class Functions
         }
     }
     
-    public void report() throws FileNotFoundException, IOException
+    public void report() throws FileNotFoundException, IOException, java.text.ParseException
     {
         List<String> uniqueDates = getUniqueDatesFromSalesTable();
-        Date selectedDate = new Date();
+        Date selectedDate = null;
         
         JComboBox<String> dateDropdown = new JComboBox<>(uniqueDates.toArray(new String[0]));
 
@@ -644,27 +644,31 @@ public class Functions
                 JOptionPane.PLAIN_MESSAGE);
 
         if (result == JOptionPane.OK_OPTION) {
-            
-            if(dateDropdown.getSelectedItem() instanceof Date)
-            {
-                 selectedDate = (Date) dateDropdown.getSelectedItem();
+            Object selectedItem = dateDropdown.getSelectedItem();
+            if (selectedItem instanceof String string) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                selectedDate = dateFormat.parse(string);
             }
         }
         
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = dateFormat.format(selectedDate);
-            String fileName = "reports/" + formattedDate + ".xlsx";
-        
+            String fileName = "reports/" + dateDropdown.getSelectedItem() + " Sales Report.xlsx";
             XSSFWorkbook workbook = new XSSFWorkbook();
 
-            createSheet(workbook, "Products", "SELECT * FROM products");
+            createSheetForSales(workbook, "Sales", "SELECT * FROM sales WHERE DATE = ?", selectedDate);
             createSheet(workbook, "Customers", "SELECT * FROM customer");
-            createSheet(workbook, "Sales", "SELECT * FROM sales");
-            createSheet(workbook, "Items Sold", "SELECT * FROM items_sold");
+            createSheetForItemsSold(workbook, "Items Sold", "SELECT * FROM items_sold", selectedDate);
+            createSheet(workbook, "Products", "SELECT * FROM products");
 
             try (FileOutputStream outputStream = new FileOutputStream(fileName)) {
                 workbook.write(outputStream);
+                
+                JOptionPane.showOptionDialog(null, "Excel file successfully created.", "",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.INFORMATION_MESSAGE,
+                null,
+                new Object[]{},
+                null);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
@@ -689,6 +693,69 @@ public class Functions
             XSSFRow row = sheet.createRow(rowNum++);
             for (int i = 1; i <= columnCount; i++) {
                 row.createCell(i - 1).setCellValue(rs.getObject(i).toString());
+            }
+        }
+    }
+    
+    private void createSheetForSales(XSSFWorkbook workbook, String sheetName, String query, Date selectedDate) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+            stmt.setDate(1, sqlDate);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                XSSFSheet sheet = workbook.createSheet(sheetName);
+
+                int rowNum = 0;
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                XSSFRow headerRow = sheet.createRow(rowNum++);
+                for (int i = 1; i <= columnCount; i++) {
+                    headerRow.createCell(i - 1).setCellValue(metaData.getColumnName(i));
+                }
+                
+                while (rs.next()) {
+                    XSSFRow row = sheet.createRow(rowNum++);
+                    for (int i = 1; i <= columnCount; i++) {
+                        row.createCell(i - 1).setCellValue(rs.getObject(i).toString());
+                    }
+                }
+            }
+        }
+    }
+
+    private void createSheetForItemsSold(XSSFWorkbook workbook, String sheetName, String query, Date selectedDate) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(query);
+        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+        ResultSet rs = stmt.executeQuery();
+        XSSFSheet sheet = workbook.createSheet(sheetName);
+
+        int rowNum = 0;
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        XSSFRow headerRow = sheet.createRow(rowNum++);
+        for (int i = 1; i <= columnCount; i++) {
+            headerRow.createCell(i - 1).setCellValue(metaData.getColumnName(i));
+        }
+
+        while (rs.next()) {
+            int salesID = rs.getInt("SALES_ID");
+            if (salesIDExistsInSales(salesID, sqlDate)) {
+                XSSFRow row = sheet.createRow(rowNum++);
+                for (int i = 1; i <= columnCount; i++) {
+                    row.createCell(i - 1).setCellValue(rs.getObject(i).toString());
+                }
+            }
+        }
+    }
+   
+    private boolean salesIDExistsInSales(int salesID, java.sql.Date selectedDate) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sales WHERE SALES_ID = ? AND DATE = ?")) {
+            stmt.setInt(1, salesID);
+            stmt.setDate(2, selectedDate);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
             }
         }
     }
