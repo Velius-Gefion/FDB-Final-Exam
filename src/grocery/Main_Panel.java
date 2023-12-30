@@ -30,18 +30,53 @@ public class Main_Panel extends JPanel
     ListSelectionModel product_selection, customer_selection, sales_selection, checkout_selection, items_sold_selection;
     
     ImageIcon menu = new ImageIcon(Grocery.class.getResource("/resources/menu.png")), 
-              purchase = new ImageIcon(Grocery.class.getResource("/resources/purchase.png")), 
-              add = new ImageIcon(Grocery.class.getResource("/resources/add.png")), 
+              purchase = new ImageIcon(Grocery.class.getResource("/resources/purchase.png")),
+              logout = new ImageIcon(Grocery.class.getResource("/resources/logout.png")),
+              add_menu = new ImageIcon(Grocery.class.getResource("/resources/add.png")), 
+              add_purchase, 
               remove = new ImageIcon(Grocery.class.getResource("/resources/remove.png")), 
               checkout = new ImageIcon(Grocery.class.getResource("/resources/cart.png")), 
               update = new ImageIcon(Grocery.class.getResource("/resources/update.png")), 
               delete = new ImageIcon(Grocery.class.getResource("/resources/delete.png")), 
               records = new ImageIcon(Grocery.class.getResource("/resources/records.png")), 
               generate = new ImageIcon(Grocery.class.getResource("/resources/generate.png"));
-    //Image;
+    
+    Image image_menu = menu.getImage(),
+          image_purchase = purchase.getImage(),
+          image_logout = logout.getImage(),
+          image_add = add_menu.getImage(), 
+          image_remove = remove.getImage(), 
+          image_checkout = checkout.getImage(), 
+          image_update = update.getImage(), 
+          image_delete = delete.getImage(), 
+          image_records = records.getImage(), 
+          image_generate = generate.getImage();
+    Image menu_resize = image_menu.getScaledInstance(90, 90, java.awt.Image.SCALE_SMOOTH),
+          purchase_resize = image_purchase.getScaledInstance(90, 90, java.awt.Image.SCALE_SMOOTH),
+          logout_resize = image_logout.getScaledInstance(90, 90, java.awt.Image.SCALE_SMOOTH),
+          add_menu_resize = image_add.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH),
+          update_resize = image_update.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH),
+          delete_resize = image_delete.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH),
+          records_resize = image_records.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH),
+          generate_resize = image_generate.getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH),
+          add_purchase_resize = image_add.getScaledInstance(70, 70, java.awt.Image.SCALE_SMOOTH),
+          remove_resize = image_remove.getScaledInstance(70, 70, java.awt.Image.SCALE_SMOOTH),
+          checkout_resize = image_checkout.getScaledInstance(70, 70, java.awt.Image.SCALE_SMOOTH);
+    
     Main_Panel(Grocery grocery, Functions function)
     {   
         function.main_Panel(this);
+        menu = new ImageIcon(menu_resize); 
+        purchase = new ImageIcon(purchase_resize);
+        logout = new ImageIcon(logout_resize);
+        add_menu = new ImageIcon(add_menu_resize);
+        update = new ImageIcon(update_resize);
+        delete = new ImageIcon(delete_resize);
+        records = new ImageIcon(records_resize);
+        generate = new ImageIcon(generate_resize);
+        add_purchase = new ImageIcon(add_purchase_resize);
+        remove = new ImageIcon(remove_resize);
+        checkout = new ImageIcon(checkout_resize);
         
         setLayout(new BorderLayout(0, 0));
         for(int i = 0;i < 7;i++)
@@ -81,9 +116,9 @@ public class Main_Panel extends JPanel
         //Left
         main_panel[2].setBackground(Color.LIGHT_GRAY);
         main_panel[2].setLayout(null);
-        main_panel[2].add(main_button[0] = new JButton("Menu"));
-        main_panel[2].add(main_button[1] = new JButton("Purchase"));
-        main_panel[2].add(main_button[2] = new JButton("Log-out"));
+        main_panel[2].add(main_button[0] = new JButton(menu));
+        main_panel[2].add(main_button[1] = new JButton(purchase));
+        main_panel[2].add(main_button[2] = new JButton(logout));
         main_panel[2].add(main_label[0] = new JLabel("Grocery Menu"));
         main_panel[2].add(main_label[1] = new JLabel("Menu"));
         main_panel[2].add(main_label[2] = new JLabel("Purchase"));
@@ -98,7 +133,7 @@ public class Main_Panel extends JPanel
         main_button[0].setBounds(50,80,100,100);
         main_button[1].setBounds(50,210,100,100);
         main_button[2].setBounds(50,340,100,100);
-
+        
         main_label[0].setBounds(15,10,200,30);
         main_label[1].setBounds(70,50,100,30);
         main_label[2].setBounds(57,180,100,30);
@@ -148,11 +183,11 @@ public class Main_Panel extends JPanel
         menu_label[0].setBounds(15,10,200,30);
 
         menu_panel[0].add(back_button[0] = new JButton("Back"));
-        menu_panel[0].add(menu_button[0] = new JButton("Add Product"));
-        menu_panel[0].add(menu_button[1] = new JButton("Update Product"));
-        menu_panel[0].add(menu_button[2] = new JButton("Delete Product"));
-        menu_panel[0].add(menu_button[3] = new JButton("Records"));
-        menu_panel[0].add(menu_button[4] = new JButton("Generate Report"));
+        menu_panel[0].add(menu_button[0] = new JButton(add_menu));
+        menu_panel[0].add(menu_button[1] = new JButton(update));
+        menu_panel[0].add(menu_button[2] = new JButton(delete));
+        menu_panel[0].add(menu_button[3] = new JButton(records));
+        menu_panel[0].add(menu_button[4] = new JButton(generate));
 
         back_button[0].setBounds(45,50,110,30);
         menu_button[0].setBounds(100,100,60,60);
@@ -459,9 +494,9 @@ public class Main_Panel extends JPanel
         purchase_panel[0].setLayout(null);
 
         purchase_panel[0].add(back_button[1] = new JButton("Back"));
-        purchase_panel[0].add(purchase_button[0] = new JButton("Add"));
-        purchase_panel[0].add(purchase_button[1] = new JButton("Remove"));
-        purchase_panel[0].add(purchase_button[2] = new JButton("Checkout"));
+        purchase_panel[0].add(purchase_button[0] = new JButton(add_purchase));
+        purchase_panel[0].add(purchase_button[1] = new JButton(remove));
+        purchase_panel[0].add(purchase_button[2] = new JButton(checkout));
         purchase_panel[0].add(purchase_label[0] = new JLabel("Grocery Menu"));
         purchase_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
         purchase_label[0].setBounds(15,10,200,30);
@@ -647,6 +682,26 @@ public class Main_Panel extends JPanel
         checkout_table.setDefaultEditor(Object.class, null);
         scroll_pane[4].setViewportView(checkout_table);
         purchase_panel[1].add(scroll_pane[4], BorderLayout.CENTER);
+        
+        for(int i = 0; i < 5; i++)
+        {
+            menu_button[i].setBackground(new Color(0, 0, 0, 0));
+            menu_button[i].setForeground(Color.WHITE);
+            menu_button[i].setContentAreaFilled(false);
+            menu_button[i].setOpaque(false);
+            if(i < 3)
+            {
+                main_button[i].setBackground(new Color(0, 0, 0, 0));
+                main_button[i].setForeground(Color.WHITE);
+                main_button[i].setContentAreaFilled(false);
+                main_button[i].setOpaque(false);
+                
+                purchase_button[i].setBackground(new Color(0, 0, 0, 0));
+                purchase_button[i].setForeground(Color.WHITE);
+                purchase_button[i].setContentAreaFilled(false);
+                purchase_button[i].setOpaque(false);
+            }
+        }
     }
 
     protected static boolean isValidEmailFormat(String email)
