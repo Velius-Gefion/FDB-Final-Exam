@@ -42,8 +42,8 @@ public final class Grocery extends JFrame
         
         function.connect();
         function.create_database();
-        show_Login_Panel();
-        
+        //show_Login_Panel();
+        show_Main_Panel();
         setVisible(true);
     }
     

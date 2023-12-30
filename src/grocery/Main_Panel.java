@@ -24,8 +24,8 @@ public class Main_Panel extends JPanel
     JButton[] back_button = new JButton[2];
 
     JLabel[] main_label = new JLabel[4];
-    JLabel[] menu_label = new JLabel[5];
-    JLabel[] purchase_label = new JLabel[3];
+    JLabel[] menu_label = new JLabel[6];
+    JLabel[] purchase_label = new JLabel[4];
 
     JTextField[] text = new JTextField[5];
 
@@ -182,8 +182,11 @@ public class Main_Panel extends JPanel
         menu_panel[0].setLayout(null);
 
         menu_panel[0].add(menu_label[0] = new JLabel("Grocery Menu"));
-        menu_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
-        menu_label[0].setBounds(15,10,200,30);
+        menu_panel[0].add(menu_label[1] = new JLabel("Add"));
+        menu_panel[0].add(menu_label[2] = new JLabel("Update"));
+        menu_panel[0].add(menu_label[3] = new JLabel("Delete"));
+        menu_panel[0].add(menu_label[4] = new JLabel("Records"));
+        menu_panel[0].add(menu_label[5] = new JLabel("<html>Generate<br>Excel</html>"));
 
         menu_panel[0].add(back_button[0] = new JButton("Back"));
         menu_panel[0].add(menu_button[0] = new JButton(add_menu));
@@ -191,14 +194,28 @@ public class Main_Panel extends JPanel
         menu_panel[0].add(menu_button[2] = new JButton(delete));
         menu_panel[0].add(menu_button[3] = new JButton(records));
         menu_panel[0].add(menu_button[4] = new JButton(generate));
-
+        
+        menu_label[0].setBounds(15,10,200,30);
+        menu_label[1].setBounds(95,110,100,30);
+        menu_label[2].setBounds(95,180,100,30);
+        menu_label[3].setBounds(95,250,100,30);
+        menu_label[4].setBounds(95,320,100,30);
+        menu_label[5].setBounds(95,380,100,50);
+        
+        menu_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        menu_label[1].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        menu_label[2].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        menu_label[3].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        menu_label[4].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        menu_label[5].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        
         back_button[0].setBounds(45,50,110,30);
-        menu_button[0].setBounds(110,100,60,60);
-        menu_button[1].setBounds(110,170,60,60);
-        menu_button[2].setBounds(110,240,60,60);
-        menu_button[3].setBounds(110,310,60,60);
-        menu_button[4].setBounds(110,380,60,60);
-
+        menu_button[0].setBounds(25,100,60,60);
+        menu_button[1].setBounds(25,170,60,60);
+        menu_button[2].setBounds(25,240,60,60);
+        menu_button[3].setBounds(25,310,60,60);
+        menu_button[4].setBounds(25,380,60,60);
+        
         back_button[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -505,13 +522,24 @@ public class Main_Panel extends JPanel
         purchase_panel[0].add(purchase_button[1] = new JButton(remove));
         purchase_panel[0].add(purchase_button[2] = new JButton(checkout));
         purchase_panel[0].add(purchase_label[0] = new JLabel("Grocery Menu"));
+        purchase_panel[0].add(purchase_label[1] = new JLabel("<html>Add<br>to cart</html>"));
+        purchase_panel[0].add(purchase_label[2] = new JLabel("<html>Remove<br>from cart</html>"));
+        purchase_panel[0].add(purchase_label[3] = new JLabel("Checkout"));
+        
         purchase_label[0].setFont(new java.awt.Font("Segoe UI", 1, 25));
+        purchase_label[1].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        purchase_label[2].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        purchase_label[3].setFont(new java.awt.Font("Segoe UI", 1, 20));
+        
         purchase_label[0].setBounds(15,10,200,30);
+        purchase_label[1].setBounds(100,130,100,50);
+        purchase_label[2].setBounds(100,240,100,50);
+        purchase_label[3].setBounds(100,350,100,50);
 
         back_button[1].setBounds(45,50,110,30);
-        purchase_button[0].setBounds(90,120,80,80);
-        purchase_button[1].setBounds(90,230,80,80);
-        purchase_button[2].setBounds(90,340,80,80);
+        purchase_button[0].setBounds(15,120,80,80);
+        purchase_button[1].setBounds(15,230,80,80);
+        purchase_button[2].setBounds(15,340,80,80);
 
         back_button[1].addActionListener(new ActionListener() {
             @Override
