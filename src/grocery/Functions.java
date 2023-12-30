@@ -38,7 +38,7 @@ public class Functions
     Session newSession = null;
     MimeMessage mimeMessage = null;
     Main_Panel mainPanel;
-    String DATABASE_NAME = "blanco";
+    String DATABASE_NAME = "inventory";
     
     Functions(Grocery grocery)
     {
