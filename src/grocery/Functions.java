@@ -632,12 +632,13 @@ public class Functions
     public void report() throws FileNotFoundException, IOException, java.text.ParseException
     {
         List<String> uniqueDates = getUniqueDatesFromSalesTable();
+        Collections.sort(uniqueDates, Collections.reverseOrder());
         Date selectedDate = null;
-        
         JComboBox<String> dateDropdown = new JComboBox<>(uniqueDates.toArray(new String[0]));
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Select Date:"));
+        
         panel.add(dateDropdown);
 
         int result = JOptionPane.showConfirmDialog(null, panel, "Date Filter", JOptionPane.OK_CANCEL_OPTION,
@@ -649,29 +650,29 @@ public class Functions
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 selectedDate = dateFormat.parse(string);
             }
-        }
-        
-        try {
-            String fileName = "reports/" + dateDropdown.getSelectedItem() + " Sales Report.xlsx";
-            XSSFWorkbook workbook = new XSSFWorkbook();
+            
+            try {
+                String fileName = "reports/" + dateDropdown.getSelectedItem() + " Sales Report.xlsx";
+                XSSFWorkbook workbook = new XSSFWorkbook();
 
-            createSheetForSales(workbook, "Sales", "SELECT * FROM sales WHERE DATE = ?", selectedDate);
-            createSheet(workbook, "Customers", "SELECT * FROM customer");
-            createSheetForItemsSold(workbook, "Items Sold", "SELECT * FROM items_sold", selectedDate);
-            createSheet(workbook, "Products", "SELECT * FROM products");
+                createSheetForSales(workbook, "Sales", "SELECT * FROM sales WHERE DATE = ?", selectedDate);
+                createSheet(workbook, "Customers", "SELECT * FROM customer");
+                createSheetForItemsSold(workbook, "Items Sold", "SELECT * FROM items_sold", selectedDate);
+                createSheet(workbook, "Products", "SELECT * FROM products");
 
-            try (FileOutputStream outputStream = new FileOutputStream(fileName)) {
-                workbook.write(outputStream);
-                
-                JOptionPane.showOptionDialog(null, "Excel file successfully created.", "",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                new Object[]{},
-                null);
+                try (FileOutputStream outputStream = new FileOutputStream(fileName)) {
+                    workbook.write(outputStream);
+
+                    JOptionPane.showOptionDialog(null, "Excel file successfully created.", "",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    new Object[]{},
+                    null);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Main_Panel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
